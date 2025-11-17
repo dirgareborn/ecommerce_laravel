@@ -1,9 +1,9 @@
-document.querySelectorAll('.dropdown-submenu').forEach(function(el) {
+document.querySelectorAll('.dropdown-submenu').forEach(function (el) {
     // Hentikan JS template agar tidak override submenu
-    el.addEventListener('mouseenter', function(e) {
+    el.addEventListener('mouseenter', function (e) {
         e.stopPropagation();
     });
-    el.addEventListener('mouseleave', function(e) {
+    el.addEventListener('mouseleave', function (e) {
         e.stopPropagation();
     });
 });
@@ -47,7 +47,7 @@ window.addEventListener('scroll', function () {
     if (currentScroll > lastScroll) {
         topHeader.classList.add('hide');
         navbar.classList.add('compact');
-    } 
+    }
     // Scroll up → tampilkan lagi
     else {
         topHeader.classList.remove('hide');
@@ -56,46 +56,46 @@ window.addEventListener('scroll', function () {
 
     lastScroll = currentScroll;
 });
- // Navbar bottom hide on scroll
-    let prevScrollpos = window.pageYOffset;
-    window.addEventListener('scroll', () => {
-        const navbar = document.getElementById("navbarBottom");
-        if (!navbar) return;
-        const currentScrollPos = window.pageYOffset;
-        navbar.style.bottom = prevScrollpos > currentScrollPos ? "0" : "-70px";
-        prevScrollpos = currentScrollPos;
-    });
+// Navbar bottom hide on scroll
+let prevScrollpos = window.pageYOffset;
+window.addEventListener('scroll', () => {
+    const navbar = document.getElementById("navbarBottom");
+    if (!navbar) return;
+    const currentScrollPos = window.pageYOffset;
+    navbar.style.bottom = prevScrollpos > currentScrollPos ? "0" : "-70px";
+    prevScrollpos = currentScrollPos;
+});
 
-    // Search Overlay + Hamburger
-    document.addEventListener("DOMContentLoaded", () => {
-        const overlay = document.getElementById("searchOverlay");
-        const openBtns = [document.getElementById("desktopSearchBtn"), document.getElementById("mobileSearchBtn")];
-        const closeBtn = document.getElementById("closeSearch");
-        const toggler = document.querySelector(".custom-toggler");
+// Search Overlay + Hamburger
+document.addEventListener("DOMContentLoaded", () => {
+    const overlay = document.getElementById("searchOverlay");
+    const openBtns = [document.getElementById("desktopSearchBtn"), document.getElementById("mobileSearchBtn")];
+    const closeBtn = document.getElementById("closeSearch");
+    const toggler = document.querySelector(".custom-toggler");
 
-        openBtns.forEach(btn => btn?.addEventListener("click", () => overlay?.classList.add("active")));
-        closeBtn?.addEventListener("click", () => overlay?.classList.remove("active"));
-        toggler?.addEventListener("click", () => toggler.classList.toggle("active"));
-    });
+    openBtns.forEach(btn => btn?.addEventListener("click", () => overlay?.classList.add("active")));
+    closeBtn?.addEventListener("click", () => overlay?.classList.remove("active"));
+    toggler?.addEventListener("click", () => toggler.classList.toggle("active"));
+});
 
-$(function() {
+$(function () {
     // ===============================
     // 🔒 Password Verification
     // ===============================
-    $("#current_pwd").on("keyup", function() {
+    $("#current_pwd").on("keyup", function () {
         const currentPwd = $(this).val();
         $.ajax({
             headers: { "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content") },
             type: "POST",
             url: "/check-current-password",
             data: { current_pwd: currentPwd },
-            success: function(resp) {
+            success: function (resp) {
                 const message = resp === "true"
                     ? "Password yang anda masukkan benar!"
                     : "Password yang anda masukkan salah";
                 $("#verifyCurrentPwd").text(message);
             },
-            error: function() {
+            error: function () {
                 $("#verifyCurrentPwd").text("Error!");
             }
         });
@@ -104,14 +104,14 @@ $(function() {
     // ===============================
     // 🔽 Sorting
     // ===============================
-    $("#sort").on("change", function() {
+    $("#sort").on("change", function () {
         this.form.submit();
     });
 
     // ===============================
     // 🛒 Add to Cart (Realtime Cart Update + Validasi Tanggal)
     // ===============================
-    $("#addCart").on("submit", function(e) {
+    $("#addCart").on("submit", function (e) {
         e.preventDefault();
 
         const start = $("#start").val();
@@ -161,10 +161,10 @@ $(function() {
             type: "POST",
             url: "/addCart",
             data: $(this).serialize(),
-            beforeSend: function() {
+            beforeSend: function () {
                 $(".print-error-msg, .print-success-msg").hide();
             },
-            success: function(resp) {
+            success: function (resp) {
                 if (resp.status) {
                     showAlert("success", resp.message);
 
@@ -186,14 +186,14 @@ $(function() {
                     showAlert("error", resp.message);
                 }
             },
-            error: function(xhr, status, error) {
+            error: function (xhr, status, error) {
                 console.error("AJAX Error:", status, error);
                 showAlert("error", "Terjadi kesalahan saat mengirim data. Silakan coba lagi.");
             }
         });
     });
 
-      $(document).on("click", ".confirmDelete", function() {
+    $(document).on("click", ".confirmDelete", function () {
         var record = $(this).attr('record');
         var recordid = $(this).attr('recordid');
         Swal.fire({
@@ -215,11 +215,11 @@ $(function() {
             }
         });
     });
-//
+    //
     // ===============================
     // 🧹 Delete Cart Item (No Message)
     // ===============================
-    $(document).on("click", ".deleteCartItem", function() {
+    $(document).on("click", ".deleteCartItem", function () {
         const cartId = $(this).data("cartid");
         if (!confirm("Apakah anda ingin menghapus dari keranjang?")) return;
 
@@ -228,77 +228,77 @@ $(function() {
             type: "POST",
             url: "/cart/delete-cart-item",
             data: { cartid: cartId },
-            success: function(resp) {
+            success: function (resp) {
                 // Update tampilan keranjang tanpa pesan
                 $("#totalCartItems").html(resp.totalCartItems);
                 $("#appendCartItems").html(resp.view);
                 $("#appendMiniCartItems").html(resp.minicartview);
             },
-            error: function() {
+            error: function () {
                 // Tidak ada pesan error
                 console.error("Terjadi kesalahan saat menghapus item.");
             }
         });
     });
 
-// ===============================
-// 🎟️ Apply Coupon (Refactor)
-// ===============================
-$(document).on("click", "#ApplyCoupon", function (e) {
-    e.preventDefault();
+    // ===============================
+    // 🎟️ Apply Coupon (Refactor)
+    // ===============================
+    $(document).on("click", "#ApplyCoupon", function (e) {
+        e.preventDefault();
 
-    const userLoggedIn = $(this).data("user") == 1; // perhatikan: pakai data-user
-    if (!userLoggedIn) {
-        alert("Silakan login untuk menggunakan kupon.");
-        return false;
-    }
+        const userLoggedIn = $(this).data("user") == 1; // perhatikan: pakai data-user
+        if (!userLoggedIn) {
+            alert("Silakan login untuk menggunakan kupon.");
+            return false;
+        }
 
-    const code = $("#code").val().trim();
-    if (code === "") {
-        alert("Silakan masukkan kode kupon terlebih dahulu.");
-        return false;
-    }
+        const code = $("#code").val().trim();
+        if (code === "") {
+            alert("Silakan masukkan kode kupon terlebih dahulu.");
+            return false;
+        }
 
-    $.ajax({
-        headers: { "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content") },
-        type: "POST",
-        url: "/apply-coupon",
-        data: { code },
-        beforeSend: function () {
-            $("#ApplyCoupon").prop("disabled", true).text("Memproses...");
-        },
-        success: function (resp) {
-            const success = resp.status === true;
+        $.ajax({
+            headers: { "X-CSRF-TOKEN": $('meta[name="csrf-token"]').attr("content") },
+            type: "POST",
+            url: "/apply-coupon",
+            data: { code },
+            beforeSend: function () {
+                $("#ApplyCoupon").prop("disabled", true).text("Memproses...");
+            },
+            success: function (resp) {
+                const success = resp.status === true;
 
-            const alertClass = success ? "alert-success" : "alert-danger";
-            const $alertBox = $(`.${alertClass}`);
+                const alertClass = success ? "alert-success" : "alert-danger";
+                const $alertBox = $(`.${alertClass}`);
 
-            $alertBox.html(`
+                $alertBox.html(`
                 <div class="alert ${alertClass} alert-dismissible fade show" role="alert">
                     <strong>${resp.message}</strong>
                     <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
                 </div>
             `).fadeIn().delay(4000).fadeOut("slow");
 
-            if (success) {
-                // Update tampilan summary
-                $(".couponAmount").text(resp.couponAmountFormatted ?? "Rp 0");
-                $(".grandTotal").text(resp.grandTotalFormatted ?? "Rp 0");
+                if (success) {
+                    // Update tampilan summary
+                    $(".couponAmount").text(resp.couponAmountFormatted ?? "Rp 0");
+                    $(".grandTotal").text(resp.grandTotalFormatted ?? "Rp 0");
 
-                // Kalau kamu punya mini-cart dan cart list yang ingin direfresh
-                if (resp.view) $("#appendCartItems").html(resp.view);
-                if (resp.minicartview) $("#appendMiniCartItems").html(resp.minicartview);
-                if (resp.totalCartItems) $("#totalCartItems").html(resp.totalCartItems);
+                    // Kalau kamu punya mini-cart dan cart list yang ingin direfresh
+                    if (resp.view) $("#appendCartItems").html(resp.view);
+                    if (resp.minicartview) $("#appendMiniCartItems").html(resp.minicartview);
+                    if (resp.totalCartItems) $("#totalCartItems").html(resp.totalCartItems);
+                }
+            },
+            error: function () {
+                alert("Terjadi kesalahan saat memproses kupon.");
+            },
+            complete: function () {
+                $("#ApplyCoupon").prop("disabled", false).text("Pakai");
             }
-        },
-        error: function () {
-            alert("Terjadi kesalahan saat memproses kupon.");
-        },
-        complete: function () {
-            $("#ApplyCoupon").prop("disabled", false).text("Pakai");
-        }
+        });
     });
-});
 
     // ===============================
     // 💳 Coupon Field Toggle
@@ -307,33 +307,33 @@ $(document).on("click", "#ApplyCoupon", function (e) {
     $("#AutomaticCoupon").on("click", () => $("#couponField").hide());
 });
 
-    $("#newsletterForm").on("submit", function(e) {
-        e.preventDefault();
-        var form = $(this);
-        var email = $("#newsletterEmail").val();
-        var token = form.find('input[name="_token"]').val();
+$("#newsletterForm").on("submit", function (e) {
+    e.preventDefault();
+    var form = $(this);
+    var email = $("#newsletterEmail").val();
+    var token = form.find('input[name="_token"]').val();
 
-        $.ajax({
-            url: "/newsletter/store",
-            type: "POST",
-            data: { email: email, _token: token },
-            success: function(res) {
-                showToast(res.message, res.success ? 'bg-success' : 'bg-danger');
-                if(res.success) form[0].reset();
-            },
-            error: function(xhr) {
-                let msg = xhr.responseJSON?.errors?.email?.[0] || 'Terjadi kesalahan. Coba lagi.';
-                showToast(msg, 'bg-danger');
-            }
-        });
+    $.ajax({
+        url: "/newsletter/store",
+        type: "POST",
+        data: { email: email, _token: token },
+        success: function (res) {
+            showToast(res.message, res.success ? 'bg-success' : 'bg-danger');
+            if (res.success) form[0].reset();
+        },
+        error: function (xhr) {
+            let msg = xhr.responseJSON?.errors?.email?.[0] || 'Terjadi kesalahan. Coba lagi.';
+            showToast(msg, 'bg-danger');
+        }
     });
+});
 
-    function showToast(message, bgClass) {
-        let toastEl = $("#centerToast");
-        let toastMessage = $("#centerToastBody");
-        toastMessage.text(message);
-        toastEl.removeClass("bg-success bg-danger").addClass(bgClass);
-        toastEl.show();
-        var toast = new bootstrap.Toast(toastEl[0], { delay: 3000 });
-        toast.show();
-    }
+function showToast(message, bgClass) {
+    let toastEl = $("#centerToast");
+    let toastMessage = $("#centerToastBody");
+    toastMessage.text(message);
+    toastEl.removeClass("bg-success bg-danger").addClass(bgClass);
+    toastEl.show();
+    var toast = new bootstrap.Toast(toastEl[0], { delay: 3000 });
+    toast.show();
+}
