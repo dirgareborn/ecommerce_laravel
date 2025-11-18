@@ -2,15 +2,57 @@
 
 //namespace app\Helpers;
 
-use Illuminate\Support\Carbon;
+use Carbon\Carbon;
 use Intervention\Image\Laravel\Facades\Image;
 use Illuminate\Http\File;
+
+
+if (!function_exists('isActiveRoute')) {
+    function isActiveRoute($route)
+    {
+        return request()->routeIs($route) ? 'active' : '';
+    }
+}
+
+
+
+function highlightHtmlMultiple($text, array $keywords)
+{
+    // Hilangkan HTML agar aman
+    $text = strip_tags($text);
+
+    // Bersihkan kata kosong
+    $keywords = array_filter($keywords, fn($k) => trim($k) !== '');
+
+    if (empty($keywords)) return $text;
+
+    // Escape regex
+    $escaped = array_map(fn($k) => preg_quote($k, '/'), $keywords);
+
+    // Gabungkan OR
+    $pattern = implode('|', $escaped);
+
+    // Replace langsung
+    return preg_replace(
+        "/($pattern)/i",
+        '<mark style="background:#ffc107;color:#000;padding:2px 4px;border-radius:3px;">$1</mark>',
+        $text
+    );
+}
+
+
+
 /**
  * Parsing url image dari rss feed description
  *
  * @param string $content
  * @return string
  */
+function first_image_or_default($html, $default)
+{
+    preg_match('/<img.+src=[\'"](?P<src>.+?)[\'"].*>/i', $html, $matches);
+    return $matches['src'] ?? $default;
+}
 
 if (! function_exists('get_tag_image')) {
     function get_tag_image(string $content)
@@ -172,9 +214,13 @@ function format_datetime($date)
     return  Carbon::parse($date)->translatedFormat('d F Y H:i:s');
 }
 
-function format_date($date)
-{
-    return  Carbon::parse($date)->translatedFormat('d F Y');
+
+if (!function_exists('format_date')) {
+    function format_date($date)
+    {
+        Carbon::setLocale('id');
+        return Carbon::parse($date)->translatedFormat('d F Y');
+    }
 }
 
 function semester()
@@ -200,25 +246,36 @@ function semester()
 }
 
 
-function is_img($url = null, $img = '/front/img/no-image.webp')
+function is_product($filename = null)
 {
-    return asset($url != null && file_exists($url) ? $url : $img);
+    if ($filename) {
+        return is_img('uploads/products/' . $filename);
+    }
+
+    return asset('front/img/property-1.jpg');
 }
 
-function is_logo($url = '', $file = '/logo.webp')
+function is_slide($filename = null)
+{
+    if ($filename) {
+        return is_img('uploads/products/slide/' . $filename);
+    }
+
+    return asset('front/img/property-1.jpg');
+}
+
+function is_logo($url = '', $file = '/logo_100x100.webp')
 {
     return is_img($url, $file);
 }
 
-function is_product($url = null)
+function is_img($path = null, $default = 'front/img/property-1.jpg')
 {
-    if ($url) {
-        $url = 'front/images/products/' . $url;
+    if ($path && file_exists(storage_path('app/public/' . $path))) {
+        return asset('storage/' . $path);
     }
 
-    $default = '/front/img/no-image.webp';
-
-    return is_img($url, $default);
+    return asset($default);
 }
 
 function is_user($url = null)
@@ -227,7 +284,7 @@ function is_user($url = null)
         $url = 'front/images/customers/' . $url;
     }
 
-    $default = 'front/img/default-user.png';
+    $default = 'https://avatar.iran.liara.run/public';
 
     return is_img($url, $default);
 }

@@ -4,7 +4,7 @@ namespace App\Console;
 
 use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Console\Kernel as ConsoleKernel;
-
+use App\Models\Coupon;
 class Kernel extends ConsoleKernel
 {
     /**
@@ -14,11 +14,13 @@ class Kernel extends ConsoleKernel
     {
         // $schedule->command('inspire')->hourly();
 		$schedule->call(function () {
-            App\Model\Coupon::whereDate('expired_date', now()->toDateString())
+            Coupon::whereDate('expired_date', now()->toDateString())
 			->update(['status'=>0]);
         })->daily();
 		
 		$schedule->command('sitemap:generate')->daily();
+        $schedule->command('orders:send-emails')->everyFiveMinutes();
+        $schedule->command('orders:auto-complete')->daily();
     }
 
     /**

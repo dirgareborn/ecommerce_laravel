@@ -8,8 +8,7 @@
           <div class="col-12">
             <div class="card clearfix">
               <div class="card-header clearfix">
-                <a href="{{ url('admin/add-edit-user') }}" class="btn btn-sm btn-flat btn-info float-right"> <i class="fas fa-plus"></i> Tambah</a>
-                <h3 class="card-title">Akun Bank</h3>
+                <h3 class="card-title">Daftar Pelanggan (Customer)</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">

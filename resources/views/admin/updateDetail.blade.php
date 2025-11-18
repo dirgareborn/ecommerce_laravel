@@ -10,12 +10,12 @@
              <!-- general form elements -->
              <div class="card card-primary">
               <div class="card-header">
-                <h3 class="card-title">Update Detail</h3>
+                <h3 class="card-title">Perbaharui Profil</h3>
               </div>
               <!-- /.card-header -->
              @include('admin.partials.alert')
               <!-- form start -->
-              <form method="post" action="{{ url('admin/update-detail') }}" enctype="multipart/form-data"> @csrf
+              <form method="post" action="{{ route('admin.profil') }}" enctype="multipart/form-data"> @csrf
                 <div class="card-body">
                   <div class="form-group">
                     <label for="Email">Email</label>

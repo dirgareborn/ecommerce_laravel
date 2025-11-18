@@ -7,6 +7,8 @@ use App\Models\User;
 use Illuminate\Foundation\Auth\RegistersUsers;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Auth\Events\Registered;
+use Illuminate\Http\Request;
 
 class RegisterController extends Controller
 {
@@ -20,16 +22,10 @@ class RegisterController extends Controller
     | provide this functionality without requiring any additional code.
     |
     */
+    use RegistersUsers;
+    protected $redirectTo = '/email/verify'; 
     protected $profil;
     protected $MenuCategories;
-    use RegistersUsers;
-
-    /**
-     * Where to redirect users after registration.
-     *
-     * @var string
-     */
-    protected $redirectTo = '/cart';
 
     /**
      * Create a new controller instance.
@@ -57,18 +53,30 @@ class RegisterController extends Controller
         ]);
     }
 
-    /**
-     * Create a new user instance after a valid registration.
-     *
-     * @param  array  $data
-     * @return \App\Models\User
-     */
-    protected function create(array $data)
+        protected function create(array $data)
     {
         return User::create([
-            'name' => $data['name'],
-            'email' => $data['email'],
+            'name'     => $data['name'],
+            'email'    => $data['email'],
             'password' => Hash::make($data['password']),
         ]);
     }
+
+    /**
+     * Override fungsi register default
+     * untuk kirim email verifikasi otomatis.
+     */
+    public function register(Request $request)
+    {
+        $this->validator($request->all())->validate();
+
+        $user = $this->create($request->all());
+
+        // ✅ Kirim email verifikasi
+        event(new Registered($user));
+
+        return redirect()->route('verification.notice')
+            ->with('success', 'Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi akun.');
+    }
+
 }

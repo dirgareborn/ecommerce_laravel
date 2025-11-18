@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Category;
 use Intervention\Image\Laravel\Facades\Image;
-use App\Models\AdminsRole;
+use App\Models\AdminRole;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 class CategoryController extends Controller
@@ -16,7 +16,7 @@ class CategoryController extends Controller
         $categories = Category::with('parentcategory')->get()->toArray();
 
         //Set Admin/Subadmins Permissions 
-        $categoriesModuleCount = AdminsRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'categories'])->count();
+        $categoriesModuleCount = AdminRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'categories'])->count();
         $categoriesModule = [];
         if(Auth::guard('admin')->user()->type=="admin"){
             $categoriesModule['view_access']=1;
@@ -26,7 +26,7 @@ class CategoryController extends Controller
             $message = "This Featu is retriced for you!";
             return redirect('admin/dashboard')->with('error_message',$message);
         }else{
-            $categoriesModule = AdminsRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'categories'])->first()->toArray();
+            $categoriesModule = AdminRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'categories'])->first()->toArray();
         }
         return view('admin.categories.categories', compact('categories','categoriesModule'));
     }
@@ -58,19 +58,15 @@ class CategoryController extends Controller
             }
             if($id==""){
                 $rules = [
-                    'category_name' => 'required',
-                    'url' => 'required|unique:categories',
+                    'category_name' => 'required'
                 ];
             }else{
                 $rules = [
-                    'category_name' => 'required',
-                    'url' => 'required'
+                    'category_name' => 'required'
                 ];
             }
             $customMessages = [
-                'category_name.required' => "Judul harus diisi",
-                'url.required' => "URL harus diisi",
-                'description.required' => 'Deskripsi harus diisi',
+                'category_name.required' => "Judul harus diisi"
             ];
 
             $this->validate($request,$rules,$customMessages);
@@ -90,14 +86,9 @@ class CategoryController extends Controller
                     $data['category_image'] = "";
                 }
                 $category->category_name = $data['category_name'];
-                $category->category_image = $data['category_image'];
-                $category->category_discount = $data['category_discount'] ?? 0;
+                $category->category_image = $data['category_image'] ?? null;
                 $category->url = $data['url'];
-                $category->parent_id = $data['parent_id'] ?? 0;
-                $category->description = $data['description'];
-                $category->meta_title = $data['meta_title'];
-                $category->meta_description = $data['meta_description'];
-                $category->meta_keywords = $data['meta_keywords'];
+                $category->parent_id = $data['parent_id'] ?? null;
                 $category->status = 1;
                 $category->save();
 

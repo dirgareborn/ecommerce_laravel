@@ -20,5 +20,11 @@ class Admin extends Authenticatable
     protected $hidden = [
         'password',
     ];
+
+    public function roles()
+    
+    {
+        return $this->hasMany(AdminRole::class, 'admin_id');
+    }
     
 }

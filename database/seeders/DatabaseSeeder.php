@@ -19,12 +19,16 @@ class DatabaseSeeder extends Seeder
         //     'email' => 'test@example.com',
         // ]);
 
-        // $this->call(AdminTableSeeder::class);
-        // $this->call(CmsPageTableSeeder::class);
-        // $this->call(CategoryTableSeeder::class);
-        // $this->call(LocationTableSeeder::class);
-        // $this->call(ProductTableSeeder::class);
-        // $this->call(ProductsImagesTableSeeder::class);
+        $this->call(AdminTableSeeder::class);
+        $this->call(CmsPageTableSeeder::class);
+        $this->call(CategoryTableSeeder::class);
+        $this->call(LocationTableSeeder::class);
+        $this->call(ProductTableSeeder::class);
+        $this->call(ProductsImagesTableSeeder::class);
         $this->call(BannersTableSeeder::class);
+        $this->call(ProfilWebsitesTableSeeder::class);
+        $this->call(InformationsTableSeeder::class);
+        $this->call(EmployeeSeeder::class);
+
     }
 }

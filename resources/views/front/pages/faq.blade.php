@@ -1,71 +1,141 @@
 @extends('front.layouts.app')
+
 @section('content')
- <!-- Header Start -->
- <div class="container-fluid header bg-white p-0">
-            <div class="row g-0 align-items-center flex-column-reverse flex-md-row">
-                <div class="col-md-6 p-5 mt-1">
-                    <h3 class="display-9 animated fadeIn mb-4">{{$page_title}}</h3> 
-                        <nav aria-label="breadcrumb animated fadeIn">
-                        <ol class="breadcrumb text-uppercase">
-                        @for($i = 1; $i <= count(Request::segments()); $i++)
-                            <li class="breadcrumb-item"><a href="{{ URL::to( implode( '/', array_slice(Request::segments(), 0 ,$i, true)))}}">{{strtoupper(Request::segment($i))}}</a></li>
-                        @endfor
-                        </ol>
-                    </nav>
-                </div>
-                <div class="col-md-6 animated fadeIn">
-                    <img class="img-fluid" src="{{ asset('front/img/header.jpg') }}" alt="">
-                </div>
-            </div>
-        </div>
-        <!-- Header End -->
-        @include('front.partials.search')
-        <div class="container-xxl py-5">
-            <div class="container">
-						<h1 class="display-5 animated fadeIn mb-4">{{$page_title}}</h1> 
-                        <div class="row g-0 text-center">
-                        <div class="col-lg-12 wow fadeIn" data-wow-delay="0.5s">
-                            <div class="accordion" id="accordionExample">
-							  <div class="accordion-item">
-								<h2 class="accordion-header" id="headingOne">
-								  <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
-									Accordion Item #1
-								  </button>
-								</h2>
-								<div id="collapseOne" class="accordion-collapse collapse show" aria-labelledby="headingOne" data-bs-parent="#accordionExample">
-								  <div class="accordion-body">
-									<strong>This is the first item's accordion body.</strong> It is shown by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-								  </div>
-								</div>
-							  </div>
-							  <div class="accordion-item">
-								<h2 class="accordion-header" id="headingTwo">
-								  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
-									Accordion Item #2
-								  </button>
-								</h2>
-								<div id="collapseTwo" class="accordion-collapse collapse" aria-labelledby="headingTwo" data-bs-parent="#accordionExample">
-								  <div class="accordion-body">
-									<strong>This is the second item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-								  </div>
-								</div>
-							  </div>
-							  <div class="accordion-item">
-								<h2 class="accordion-header" id="headingThree">
-								  <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
-									Accordion Item #3
-								  </button>
-								</h2>
-								<div id="collapseThree" class="accordion-collapse collapse" aria-labelledby="headingThree" data-bs-parent="#accordionExample">
-								  <div class="accordion-body">
-									<strong>This is the third item's accordion body.</strong> It is hidden by default, until the collapse plugin adds the appropriate classes that we use to style each element. These classes control the overall appearance, as well as the showing and hiding via CSS transitions. You can modify any of this with custom CSS or overriding our default variables. It's also worth noting that just about any HTML can go within the <code>.accordion-body</code>, though the transition does limit overflow.
-								  </div>
-								</div>
-							  </div>
-							</div>				
-                        </div>
-                        </div>
+@include('front.partials.breadcumb')
+<!-- Content Start -->
+<div class="container-xl py-5">
+    <div class="container">
+        <h1 class="display-6 mb-5 text-center text-primary animated fadeIn">{{ $page_title }}</h1>
+
+<div class="row justify-content-center">
+    <div class="col-lg-12 wow fadeIn" data-wow-delay="0.3s">
+        <div class="accordion" id="accordionFAQ">
+
+            <!-- FAQ 1 -->
+            <div class="accordion-item mb-3 shadow-sm rounded">
+                <h2 class="accordion-header" id="faqHeading1">
+                    <button class="accordion-button bg-primary text-white fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapse1" aria-expanded="true" aria-controls="faqCollapse1">
+                        <i class="bi bi-question-circle me-2"></i> Apa saja jenis aset yang dapat disewa di Kampus BLU?
+                        <span class="badge bg-warning text-dark ms-auto">Populer</span>
+                    </button>
+                </h2>
+                <div id="faqCollapse1" class="accordion-collapse collapse show" aria-labelledby="faqHeading1" data-bs-parent="#accordionFAQ">
+                    <div class="accordion-body">
+                        Kampus BLU menyediakan berbagai aset yang bisa disewa, termasuk:
+                        <ul>
+                            <li>Ruang pertemuan</li>
+                            <li>Auditorium</li>
+                            <li>Laboratorium</li>
+                            <li>Peralatan multimedia</li>
+                            <li>Lahan parkir</li>
+                        </ul>
+                        Setiap aset memiliki ketentuan dan tarif sewa yang berbeda.
                     </div>
                 </div>
+            </div>
+
+            <!-- FAQ 2 -->
+            <div class="accordion-item mb-3 shadow-sm rounded">
+                <h2 class="accordion-header" id="faqHeading2">
+                    <button class="accordion-button collapsed bg-light text-dark fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapse2" aria-expanded="false" aria-controls="faqCollapse2">
+                        <i class="bi bi-question-circle me-2"></i> Bagaimana prosedur pemesanan aset?
+                    </button>
+                </h2>
+                <div id="faqCollapse2" class="accordion-collapse collapse" aria-labelledby="faqHeading2" data-bs-parent="#accordionFAQ">
+                    <div class="accordion-body">
+                        Prosedur pemesanan:
+                        <ol>
+                            <li>Mengisi formulir pemesanan di website atau kantor administrasi.</li>
+                            <li>Menunggu konfirmasi ketersediaan aset.</li>
+                            <li>Membayar biaya sewa sesuai ketentuan.</li>
+                            <li>Menerima surat konfirmasi dan instruksi penggunaan.</li>
+                        </ol>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ 3 -->
+            <div class="accordion-item mb-3 shadow-sm rounded">
+                <h2 class="accordion-header" id="faqHeading3">
+                    <button class="accordion-button collapsed bg-light text-dark fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapse3" aria-expanded="false" aria-controls="faqCollapse3">
+                        <i class="bi bi-question-circle me-2"></i> Berapa biaya sewa aset?
+                    </button>
+                </h2>
+                <div id="faqCollapse3" class="accordion-collapse collapse" aria-labelledby="faqHeading3" data-bs-parent="#accordionFAQ">
+                    <div class="accordion-body">
+                        Biaya sewa bervariasi tergantung jenis aset, durasi, dan fasilitas tambahan. Tarif resmi dapat dilihat di website Kampus BLU atau di bagian administrasi.
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ 4 -->
+            <div class="accordion-item mb-3 shadow-sm rounded">
+                <h2 class="accordion-header" id="faqHeading4">
+                    <button class="accordion-button collapsed bg-light text-dark fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapse4" aria-expanded="false" aria-controls="faqCollapse4">
+                        <i class="bi bi-question-circle me-2"></i> Apakah ada persyaratan khusus untuk menyewa aset?
+                    </button>
+                </h2>
+                <div id="faqCollapse4" class="accordion-collapse collapse" aria-labelledby="faqHeading4" data-bs-parent="#accordionFAQ">
+                    <div class="accordion-body">
+                        Persyaratan umum:
+                        <ul>
+                            <li>Identitas resmi (KTP/NIK atau identitas organisasi).</li>
+                            <li>Formulir pemesanan lengkap dan tanda tangan persetujuan aturan penggunaan.</li>
+                            <li>Deposit atau pembayaran awal sesuai ketentuan.</li>
+                            <li>Menandatangani surat perjanjian sewa jika diperlukan.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ 5 -->
+            <div class="accordion-item mb-3 shadow-sm rounded">
+                <h2 class="accordion-header" id="faqHeading5">
+                    <button class="accordion-button collapsed bg-light text-dark fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapse5" aria-expanded="false" aria-controls="faqCollapse5">
+                        <i class="bi bi-question-circle me-2"></i> Bagaimana cara membatalkan atau mengubah pemesanan?
+                    </button>
+                </h2>
+                <div id="faqCollapse5" class="accordion-collapse collapse" aria-labelledby="faqHeading5" data-bs-parent="#accordionFAQ">
+                    <div class="accordion-body">
+                        Untuk membatalkan atau mengubah pemesanan:
+                        <ul>
+                            <li>Hubungi administrasi melalui email atau telepon.</li>
+                            <li>Lakukan minimal 3 hari sebelum jadwal sewa.</li>
+                            <li>Ikuti ketentuan pengembalian deposit sesuai peraturan Kampus BLU.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- FAQ 6 -->
+            <div class="accordion-item mb-3 shadow-sm rounded">
+                <h2 class="accordion-header" id="faqHeading6">
+                    <button class="accordion-button collapsed bg-light text-dark fw-bold" type="button" data-bs-toggle="collapse"
+                        data-bs-target="#faqCollapse6" aria-expanded="false" aria-controls="faqCollapse6">
+                        <i class="bi bi-question-circle me-2"></i> Apa yang harus dilakukan jika aset rusak atau bermasalah?
+                    </button>
+                </h2>
+                <div id="faqCollapse6" class="accordion-collapse collapse" aria-labelledby="faqHeading6" data-bs-parent="#accordionFAQ">
+                    <div class="accordion-body">
+                        Segera laporkan kerusakan atau masalah ke pihak Kampus BLU. Biaya perbaikan akan ditentukan sesuai pemeriksaan dan perjanjian sewa.
+                    </div>
+                </div>
+            </div>
+
+            Terhubung dengan Pusat Layanan? Klik <a href="{{ route('help-desk') }}" class=" fw-bold"> <i class="fas fa-headset "></i> Help-desk </a>
+
+
+        </div>
+    </div>
+</div>
+
+
+    </div>
+</div>
+<!-- Content End -->
 @endsection
-       

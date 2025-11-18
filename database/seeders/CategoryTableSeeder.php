@@ -2,59 +2,60 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Category;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\DB;
 
 class CategoryTableSeeder extends Seeder
 {
-    /**
-     * Run the database seeds.
-     */
-    public function run(): void
+    public function run()
     {
-        $categoriesRecords = [
-            [   
-                'id' => 1,
-                'parent_id'=>0,
-                'category_name' => 'Gedung Serba Guna',
-                'category_image' => '',
-                'category_discount' => 0,
-                'description' => 'Gedung serba Guna Makassar',
-                'url' => 'gedung-serba-guna',
-                'meta_title' => 'Gedung serba Guna Makassar',
-                'meta_description' => 'Gedung serba Guna Makassar',
-                'meta_keywords' => 'Gedung serba Guna Makassar',
-                'status' => 1,
-            ],
-            [   
-                'id' => 2,
-                'parent_id'=>0,
-                'category_name' => 'Lapangan Olah Raga',
-                'category_image' => '',
-                'category_discount' => 0,
-                'description' => 'sewa lapangan murah Makassar',
-                'url' => 'lapangan-olahraga',
-                'meta_title' => 'sewa lapangan murah Makassar',
-                'meta_description' => 'sewa lapangan murah Makassar',
-                'meta_keywords' => 'sewa lapangan murah Makassar',
-                'status' => 1,
-            ],
-            [   
-                'id' => 3,
-                'parent_id'=>1,
-                'category_name' => 'Hall Convention',
-                'category_image' => '',
-                'category_discount' => 0,
-                'description' => 'Hall Convention Murah Makassar',
-                'url' => 'hall-convention',
-                'meta_title' => 'Rental Hall Convention Murah  Makassar',
-                'meta_description' => 'Rental Hall Convention Murah Makassar',
-                'meta_keywords' => 'Rental Hall Convention Murah Makassar',
-                'status' => 1,
-            ],
+        DB::table('categories')->truncate();
+
+        // Parent categories
+        $parents = [
+            1 => 'Sarana Olahraga',
+            2 => 'Hunian & Akomodasi',
+            3 => 'Event Space & Venue',
+            4 => 'Area Komersial',
+            5 => 'Peralatan & Mesin',
+            6 => 'Pelatihan',
+            7 => 'Media & Publikasi',
         ];
-    
-        Category::insert($categoriesRecords);
+
+        $children = [
+            1 => ['Lapangan Sepakbola', 'Lapangan Bulutangkis', 'Lapangan Basket'],
+            2 => ['Rusunawa', 'Ramsis', 'Hotel / Guest House'],
+            3 => ['Ballroom', 'Ruang Rapat', 'Ruang Kelas', 'Ruang Seminar', 'Gedung Pernikahan'],
+            4 => ['Kantin', 'Foodcourt', 'Ruko', 'Lahan Terbuka'],
+            5 => ['Bus Pariwisata', 'Mobil Dinas', 'Proyektor', 'Sound System', 'Kursi Lipat', 'Meja Kotak', 'Tenda'],
+            6 => ['UPA Bahasa', 'Pelatihan Bimbingan Konseling', 'Tes Psikologi Pegawai', 'Pelatihan / Sertifikasi Lainnya'],
+            7 => ['Videotron'],
+        ];
+
+        // Insert Parent Categories
+        foreach ($parents as $id => $name) {
+            DB::table('categories')->insert([
+                'id'            => $id,
+                'parent_id'     => null,
+                'category_name' => $name,
+                'category_image'=> null,
+                'url'           => Str::slug($name),
+                'status'        => 1,
+            ]);
         }
+
+        // Insert Child Categories
+        foreach ($children as $parentId => $items) {
+            foreach ($items as $childName) {
+                DB::table('categories')->insert([
+                    'parent_id'     => $parentId,
+                    'category_name' => $childName,
+                    'category_image'=> null,
+                    'url'           => Str::slug($childName),
+                    'status'        => 1,
+                ]);
+            }
+        }
+    }
 }

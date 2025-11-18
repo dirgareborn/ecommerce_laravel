@@ -15,6 +15,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Support\Str;
+
 class AdminController extends Controller
 {
     
@@ -39,6 +40,12 @@ class AdminController extends Controller
                 'email'=>$data['email'],
                 'password'=>$data['password']
                 ])){
+                    // 
+                    $request->session()->regenerate();
+                     // Simpan session id di tabel users
+                    $user = Auth::guard('admin')->user();
+                    $user->session_id = session()->getId();
+                    $user->save();
                     // Remember Me Email dan Password
                     if(isset($data['remember'])&&!empty($data['remember'])){
                         setcookie("email",$data['email'],time()+3600);
@@ -56,9 +63,18 @@ class AdminController extends Controller
         return view('admin.login');
     }
 
-    public function logout(){
+    public function logout(Request $request){
+        $user = Auth::guard('admin')->user();
+        if ($user) {
+            $user->session_id = null;
+            $user->save();
+        }
+
         Auth::guard('admin')->logout();
-        return redirect('admin/login');
+        
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        return redirect()->route('beranda');
     }
 
     public function updatePassword(Request $request){

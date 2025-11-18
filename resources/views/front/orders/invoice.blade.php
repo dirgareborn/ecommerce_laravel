@@ -1,124 +1,257 @@
 <?php
+use App\Services\ProductPriceService;
+use App\Models\Product;
+?>
 
-use App\Models\Product; ?>
-@php $total_price = 0 @endphp
+@push('style')
+<style>
+  /* ============================
+     🧾 INVOICE TABLE STYLES
+  ============================ */
+  .invoice-table th,
+  .invoice-table td {
+    font-size: 0.95rem;
+    white-space: nowrap;
+    vertical-align: middle;
+  }
+
+  /* Tablet & Mobile (≤768px) */
+  @media (max-width: 768px) {
+    .invoice-table th,
+    .invoice-table td {
+      font-size: 0.8rem;
+      padding: 0.4rem;
+    }
+
+    /* Sembunyikan kolom non-esensial */
+    .invoice-table .hide-mobile {
+      display: none !important;
+    }
+
+    /* Tanggal bisa wrap agar tidak kepanjangan */
+    .invoice-table th:nth-child(3),
+    .invoice-table td:nth-child(3) {
+      white-space: normal;
+    }
+  }
+
+  /* Mobile kecil (≤480px) */
+  @media (max-width: 480px) {
+    .invoice-table th,
+    .invoice-table td {
+      font-size: 0.7rem;
+      padding: 0.25rem;
+    }
+  }
+
+  /* ============================
+     💳 INVOICE FOOTER & BUTTON
+  ============================ */
+  .invoice-footer {
+    margin-top: 1.5rem;
+    align-items: center;
+  }
+
+  /* Tombol Bayar */
+  #pay-button {
+    border: none;
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+    background-color: #60bdf3;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 0.5rem 1.25rem;
+    border-radius: 8px;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+  }
+
+  #pay-button:hover {
+    background-color: #4bb4ec;
+    transform: translateY(-1px);
+  }
+
+  #pay-button i {
+    font-size: 1.1rem;
+  }
+
+  /* Responsif Footer */
+  @media (max-width: 768px) {
+    .invoice-footer {
+      flex-direction: column;
+      text-align: center !important;
+      gap: 0.75rem;
+    }
+
+    .invoice-footer #pay-button {
+      width: 100%;
+    }
+  }
+</style>
+
+@endpush
+
 @foreach($orders as $order)
-<div class="card">
+@php
+$subtotal = 0;
+$totalDiscount = 0;
+$couponAmount = $order['coupon_amount'] ?? 0; // dari tabel orders
+$grandTotal = 0;
+@endphp
+
+<div class="card mb-4 shadow-sm border-0">
   <div class="card-body">
     <div class="container mb-5 mt-3">
+
+      {{-- Header --}}
       <div class="row d-flex align-items-baseline">
         <div class="col-xl-9">
-          <p style="color: #7e8d9f;font-size: 20px;">Invoice >> <strong>ID: #036-14{{ $order['id'] }}</strong></p>
+          <p style="color:#7e8d9f;font-size:20px;">
+            Invoice >> <strong>ID: #{{ $order['invoice_number'] }}</strong>
+          </p>
         </div>
-        <div class="col-xl-3 float-end">
-          <a data-mdb-ripple-init class="btn btn-light text-capitalize border-0" data-mdb-ripple-color="dark" href="{{url('download-invoice-pdf', $order['id'] )}}"><i class="fas fa-print text-primary"></i> Print</a>
-          <a data-mdb-ripple-init class="btn btn-light text-capitalize" target="_blank" data-mdb-ripple-color="dark" href="{{url('order-invoice-pdf', $order['id'] )}}"><i class="far fa-file-pdf text-danger"></i> Export</a>
+        <div class="col-xl-3 text-end">
+          <a class="btn btn-light" target="_blank" href="{{ url('invoice', $order['id']) }}">
+            <i class="far fa-file-pdf text-danger"></i> Export PDF
+          </a>
         </div>
         <hr>
       </div>
 
-      <div class="container">
-        <div class="col-md-12">
-          <div class="text-center">
-            <i class="fab fa-mdb fa-4x ms-0" style="color:#5d9fc5 ;"></i>
-            <p class="pt-0">Badan Pengembangan Bisnis <br> Universitas Negeri Makassar</p>
-          </div>
-
+      {{-- Informasi --}}
+      <div class="row mb-3">
+        <div class="col-xl-8">
+          <ul class="list-unstyled">
+            <li class="text-muted">
+              To: <span style="color:#5d9fc5;">{{ $order['users']['name'] }}</span>
+            </li>
+            <li class="text-muted">{{ $order['users']['email'] ?? '' }}</li>
+          </ul>
         </div>
-
-
-        <div class="row">
-          <div class="col-xl-8">
-            <ul class="list-unstyled">
-              <li class="text-muted">To: <span style="color:#5d9fc5 ;"> {{$order['name'] }}</span></li>
-              <li class="text-muted">{{$order['address'] }}</li>
-              <li class="text-muted">Kode Pos {{$order['pincode'] }}</li>
-              <li class="text-muted"><i class="fas fa-phone"></i> {{$order['mobile'] }}</li>
-            </ul>
-          </div>
-          <div class="col-xl-4">
-            <p class="text-muted">Invoice</p>
-            <ul class="list-unstyled">
-              <li class="text-muted"><i class="fas fa-circle" style="color:#84B0CA ;"></i> <span class="fw-bold">ID:</span>#036-14{{ $order['id'] }}</li>
-              <li class="text-muted"><i class="fas fa-circle" style="color:#84B0CA ;"></i> <span class="fw-bold">Tanggal Pesanan: </span>{{format_date($order['created_at']) }}</li>
-              <li class="text-muted"><i class="fas fa-circle" style="color:#84B0CA ;"></i> <span class="me-1 fw-bold">Status:</span><span class="badge bg-warning text-black fw-bold">
-                  {{$order['order_status'] }}</span></li>
-            </ul>
-          </div>
+        <div class="col-xl-4">
+          <p class="text-muted fw-bold mb-1">Invoice Details</p>
+          <ul class="list-unstyled">
+            <li><span class="fw-bold">ID:</span> #{{ $order['invoice_number'] }}</li>
+            <li><span class="fw-bold">Tanggal:</span> {{ format_date($order['created_at']) }}</li>
+            <li><span class="fw-bold">Status:</span> 
+              <span class="badge bg-warning text-black fw-bold">{{ $order['order_status'] }}</span>
+            </li>
+          </ul>
         </div>
+      </div>
 
-        <div class="row my-2 mx-1 justify-content-center">
-          <table class="table table-striped table-borderless">
-            <thead style="background-color:#84B0CA ;" class="text-white">
+      <div class="row justify-content-center">
+        <div class="table-responsive">
+          <table class="table table-striped table-borderless align-middle invoice-table">
+            <thead style="background-color:#84B0CA;" class="text-white">
               <tr>
-                <th scope="col">#</th>
-                <th scope="col">Deskripsi</th>
-                <th scope="col">Tanggal Pemakaian</th>
-                <th scope="col">Harga Produk</th>
-                <th scope="col">Jumlah</th>
+                <th>#</th>
+                <th>Deskripsi</th>
+                <th>Tanggal Pemakaian</th>
+                <th class="hide-mobile">Harga Normal</th>
+                <th class="hide-mobile">Diskon</th>
+                <th class="hide-mobile">Harga Akhir</th>
+                <th>Qty</th>
+                <th>Total</th>
               </tr>
             </thead>
             <tbody>
+              @php
+              $subtotal = 0;
+              $totalDiscount = 0;
+              $grandTotal = 0;
+              @endphp
 
               @foreach($order['orders_products'] as $key => $product)
-              <?php
-              $getAttributePrice = Product::getAttributePrice($product['product_id'], $product['customer_type']);
-              ?>
-              <tr>
-                <th scope="row">{{ $key + 1; }}</th>
-                <td>
-                  {{ $product['product_name'] }}
-                </td>
-                <td> {{ $product['start_date'] }} - {{ $product['end_date'] }}
+              @php
+              $productModel = App\Models\Product::find($product['product_id']);
+              $priceInfo = App\Services\ProductPriceService::getPrice($productModel, $order['users']['customer_type'] ?? 'umum');
 
-                </td>
-                <td>@currency($product['product_price'])</td>
-                <td>@currency($product['product_price']*$product['qty'])</td>
-              </tr>
-              @php $total_price = $total_price + ($getAttributePrice['final_price']* $product['qty'] );
+              $normal = $priceInfo['product_price'] * $product['qty'];
+              $discount = $priceInfo['discount'] * $product['qty'];
+              $final = $priceInfo['final_price'] * $product['qty'];
+
+              $subtotal += $normal;
+              $totalDiscount += $discount;
+              $grandTotal += $final;
               @endphp
+              <tr>
+                <td>{{ $key + 1 }}</td>
+                <td>{{ $product['product_name'] }}</td>
+                <td>{{ $product['start_date'] }} - {{ $product['end_date'] }}</td>
+                <td class="hide-mobile">@currency($priceInfo['product_price'])</td>
+                <td class="hide-mobile">@currency($priceInfo['discount'])</td>
+                <td class="hide-mobile">@currency($priceInfo['final_price'])</td>
+                <td>{{ $product['qty'] }}</td>
+                <td>@currency($final)</td>
+              </tr>
               @endforeach
             </tbody>
-
           </table>
         </div>
-        <div class="row">
-          <div class="col-xl-8">
-            <p class="ms-3">Silahkan menyelesaikan Pembayaran dengan akun pembayaran berikut</p>
-            @foreach($banks as $bank)
-            <img src="{{ asset('front/images/banks/'. $bank['bank_icon']) }}" width="45px"><br>
-            <small> a.n {{ $bank['account_name'] }} </small><br>
-            <small>No. Rekening {{ $bank['account_number'] }} </small><br>
-            @endforeach
+      </div>
+
+      {{-- Total & Pembayaran --}}
+      <div class="row">
+        <div class="col-xl-8">
+          <p class="ms-3">Silakan lakukan pembayaran ke rekening berikut:</p>
+          @foreach($banks as $bank)
+          <div class="mb-2">
+            <img src="{{ asset('front/images/banks/'.$bank['bank_icon']) }}" width="45" class="me-2">
+            <div><small>a.n {{ $bank['account_name'] }}</small></div>
+            <div><small>No. Rekening {{ $bank['account_number'] }}</small></div>
           </div>
-          <div class="col-xl-3">
-            <ul class="list-unstyled">
-              <li class="text-muted float-start"><span class="text-black me-2">SubTotal</span>
-              <strong style="margin-left: 70px;"> @currency($total_price)</strong>
-              </li>
-              <li class="text-muted float-start"><span class="text-black me-4">Subsidi (Diskon) </span>
-                <strong class="couponAmount">
-                  @currency($order['coupon_amount'])
-                </strong>
-              </li>
-              <li class="text-muted float-start"><span class="text-black me-4"> Grand Total</span>
-                <strong style="margin-left: 35px;">@currency($order['grand_total'])
-                </strong>
-              </li>
-            </ul>
-          </div>
+          @endforeach
         </div>
-        <hr>
-        <div class="row">
-          <div class="col-xl-10">
-            <p>Terima kasih atas Kepercayaan Anda</p>
-          </div>
-          <div class="col-xl-2">
-            <button type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-info text-white" style="background-color:#60bdf3 ;">Bayar Sekarang</button>
-          </div>
+
+        <div class="col-xl-4">
+          <ul class="list-unstyled">
+            <li class="d-flex justify-content-between text-muted">
+              <span>Total Harga Normal:</span>
+              <strong>@currency($subtotal)</strong>
+            </li>
+            <li class="d-flex justify-content-between text-muted">
+              <span>Total Diskon Produk:</span>
+              <strong class="text-danger">- @currency($totalDiscount)</strong>
+            </li>
+            @if($couponAmount > 0)
+            <li class="d-flex justify-content-between text-muted">
+              <span>Potongan Kupon:</span>
+              <strong class="text-danger">- @currency($couponAmount)</strong>
+            </li>
+            @endif
+            <li class="d-flex justify-content-between mt-2 border-top pt-2">
+              <span class="fw-bold text-black">Grand Total:</span>
+              <strong class="text-success fs-5">@currency(max(0, $grandTotal - $couponAmount))</strong>
+            </li>
+          </ul>
         </div>
       </div>
+
+      <hr>
+
+      <div class="row align-items-center invoice-footer">
+        <div class="col-xl-10 col-lg-9 col-md-8 col-sm-12 mb-2 mb-sm-0 text-center text-sm-start">
+          <p class="mb-0 fw-medium text-muted">
+            Terima kasih atas kepercayaan Anda 🙏
+          </p>
+        </div>
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-12 text-center text-sm-end">
+<button 
+      type="button" 
+      id="pay-button" 
+      class="btn btn-info text-white btn-flat"
+      style="background-color:#60bdf3;"
+    >
+      <i class="fas fa-credit-card"></i>
+      <span>Bayar</span>
+    </button>
+      </div>
     </div>
+
   </div>
+</div>
 </div>
 @endforeach

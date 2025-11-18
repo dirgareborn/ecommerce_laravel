@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\AdminsRole;
+use App\Models\AdminRole;
 use Intervention\Image\Laravel\Facades\Image;
 use App\Models\Banner;
 use Illuminate\Support\Facades\DB;
@@ -22,7 +22,7 @@ class BannerController extends Controller
         $banners = Banner::get()->toArray();
 
         //Set Admin/Subadmins Permissions 
-        $bannerModuleCount = AdminsRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'banners'])->count();
+        $bannerModuleCount = AdminRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'banners'])->count();
         $bannerModule = [];
         if(Auth::guard('admin')->user()->type=="admin"){
             $bannerModule['view_access']=1;
@@ -32,7 +32,7 @@ class BannerController extends Controller
             $message = "This Featu is retriced for you!";
             return redirect('admin/dashboard')->with('error_message',$message);
         }else{
-            $bannerModule = AdminsRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'banners'])->first()->toArray();
+            $bannerModule = AdminRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'banners'])->first()->toArray();
         }        
         return view('admin.banners.banners')->with(compact('title','banners','bannerModule'));
     }

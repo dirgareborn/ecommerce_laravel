@@ -53,28 +53,6 @@
                     @endif
                 </div>
                 <div class="form-group">
-                  <label>Diskon</label>
-                <input type="text" id="category_discount" name="category_discount" placeholder="Ketikkan Diskon" class="form-control" @if(!empty($category['category_discount'])) value="{{ $category['category_discount'] }}" @endif>
-                </div>
-                <div class="form-group">
-                  <label>URL </label>
-                <input type="text" id="url" name="url" placeholder="Ketikkan URL Halaman" class="form-control" value="{{ $category['url'] ?? '' }}">
-                </div>
-                <div class="form-group">
-                  <label>Deskripsi</label>
-                  <textarea name="description" id="description" rows="3" placeholder="Ketikkan Deskripsi Halaman" class="form-control"> {{ $category['description'] ?? ''}} </textarea>
-                </div>
-                <div class="form-group">
-                  <label>Judul Meta</label>
-                <input type="text" id="meta_title" name="meta_title" placeholder="Ketikkan Judul Halaman" class="form-control" @if(!empty($category['meta_title'])) value="{{ $category['meta_title']  }}" @endif>
-                </div>
-                <div class="form-group">
-                  <label>Deskripsi Meta</label>
-                  <textarea name="meta_description" id="meta_description" rows="3" placeholder="Ketikkan Deskripsi Halaman" class="form-control" value="{{ $category['meta_description'] ?? '' }}">{{ $category['meta_description'] ?? '' }}</textarea>
-                </div>
-                <div class="form-group">
-                  <label>Meta Pencarian</label>
-                  <input type="text" id="meta_keywords" name="meta_keywords" placeholder="Ketikkan Kata Kunci Meta Pencarian" class="form-control" value="{{ $category['meta_keywords'] ?? '' }}">                </div>
                   @if(empty($category['id']))
                   <button type="submit" class="btn btn-primary">Simpan</button>
                   @else

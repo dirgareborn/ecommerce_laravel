@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\AccountBank;
 use Intervention\Image\Laravel\Facades\Image;
-use App\Models\AdminsRole;
+use App\Models\AdminRole;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Str;
@@ -17,7 +17,7 @@ class AccountBankController extends Controller
         $accountBanks = AccountBank::all()->toArray();
 
         //Set Admin/Subadmins Permissions 
-        $accountbanksModuleCount = AdminsRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'accountbanksModule'])->count();
+        $accountbanksModuleCount = AdminRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'accountbanksModule'])->count();
         $accountbanksModule = [];
         if(Auth::guard('admin')->user()->type=="admin"){
             $accountbanksModule['view_access']=1;
@@ -27,7 +27,7 @@ class AccountBankController extends Controller
             $message = "This Featu is retriced for you!";
             return redirect('admin/dashboard')->with('error_message',$message);
         }else{
-            $accountbanksModule = AdminsRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'accountbanksModule'])->first()->toArray();
+            $accountbanksModule = AdminRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'accountbanksModule'])->first()->toArray();
         }
         return view('admin.banks.banks', compact('accountBanks','accountbanksModule'));
     }

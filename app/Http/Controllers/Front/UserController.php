@@ -20,8 +20,8 @@ class UserController extends Controller
      *
      * @return void
      */
-	public $MenuCategories;
-	
+    public $MenuCategories;
+
     public function __construct(Controller $MenuCategories)
     {
         $this->middleware('auth');
@@ -37,22 +37,24 @@ class UserController extends Controller
     {
         return view('cart');
     }
-	
-	public function pesanan()
+
+    public function orders()
     {
-        return view('front.customers.order_list');
+        $orders = Order::with('orders_products')->where('user_id', Auth::user()->id)->orderBy('id', 'DESC')->get();
+        return view('front.customers.order_list')->with(compact('orders'));
     }
-	public function account()
+
+    public function account()
     {
         return view('front.customers.account');
     }
-	
-	public function profil()
+
+    public function profil()
     {
         return view('front.customers.profil');
     }
-	
-	public function updatePassword(Request $request){
+
+    public function updatePassword(Request $request){
         if($request->isMethod('post')){
             $data = $request->all();
             // cek password lama benar
@@ -82,10 +84,10 @@ class UserController extends Controller
     }
 
     public function updateDetail(Request $request){
-        
+
         if($request->isMethod('post')){
             $data = $request->all();
-			
+
             $rules = [
                 'name'    => 'required|max:35',
             ];
@@ -94,10 +96,10 @@ class UserController extends Controller
                 'name.required'   => 'Nama harus terisi',
                 // 'name.regex'   => 'Nama harus valid',
                 'name.max'        =>  'Nama tidak boleh lebih dari 35 karakter',
-				
+
             ];
-			
-           $this->validate($request,$rules,$customMessages);
+
+            $this->validate($request,$rules,$customMessages);
 			//echo "<pre>"; print_r($customMessages); die;
             // update detail admin
 			//dd($data);
@@ -106,64 +108,67 @@ class UserController extends Controller
                 $filename = $file->getClientOriginalName();
                 $extension = $file->getClientOriginalExtension();
                 $fileName = $filename ."-".date('his')."-".str::random(3).".".$extension;
-                        
+
                 $destinationPath = 'front/images/customers'.'/';
                 $file->move($destinationPath, $fileName);
                 $data['image'] = $fileName;
-                }else if (!empty($data['current_image'])){
-                    $data['image'] = $data['current_image'];
-                }else{
-                    $data['image'] = "";
-                }
-				$user = User::where('id', Auth::user()->id)->update([
+            }else if (!empty($data['current_image'])){
+                $data['image'] = $data['current_image'];
+            }else{
+                $data['image'] = "";
+            }
+            $user = User::where('id', Auth::user()->id)->update([
                 'name'=> $data['name'],
                 'mobile'=> $data['mobile'],
                 'address'=> $data['address'],
                 'pincode'=> $data['pincode'],
                 'image'=> $data['image']
-				]);
-			
-			if($user){
-           return redirect()->back()->with('success_message','Data detail anda berhasil diperbarui!');
-			}else{
-			return redirect()->back()->with('error_message','Data detail gagal diperbarui!');
-			}
-		}
+            ]);
+
+            if($user){
+               return redirect()->back()->with('success_message','Data detail anda berhasil diperbarui!');
+           }else{
+               return redirect()->back()->with('error_message','Data detail gagal diperbarui!');
+           }
+       }
        // return view('front.customers.profil');
+   }
+
+   public function testimonial(Request $request)
+   {
+    $user = Auth::user();
+
+        // Ambil testimonial terbaru
+    $getTestimonial = Testimonial::where('user_id', $user->id)
+    ->latest()
+    ->first();
+
+        // Jika submit form
+    if ($request->isMethod('post')) {
+        $validated = $request->validate([
+            'description' => 'required|string|max:1000',
+        ], [
+            'description.required' => 'Testimonial harus diisi.',
+            'description.max' => 'Testimonial terlalu panjang (maksimum 1000 karakter).',
+        ]);
+
+            // Simpan testimonial baru
+        Testimonial::create([
+            'user_id' => $user->id,
+            'description' => trim($validated['description']),
+                'status' => 0, // pending review
+            ]);
+
+        return redirect()->back()->with('success_message', 'Testimonial Anda berhasil dikirim dan menunggu konfirmasi admin.');
     }
 
-    public function testimonial(Request $request){
-        $getTestimonial = Testimonial::select('description')->where('user_id',Auth::user()->id)->first();
-        // dd($getTestimonial->description);
-        if($request->isMethod('post')){
-            $data = $request->all();
-            //check Testimonial
-            $rules = [
-                'description' => 'required'
-            ];
+        // Ambil semua testimonial user (riwayat)
+    $testimonials = Testimonial::where('user_id', $user->id)
+    ->latest()
+    ->get();
 
-            $customMessages = [
-                'description.required' => 'Testimonial harus diisi',
-            ];
+    return view('front.customers.testimonial', compact('getTestimonial', 'testimonials'));
+}
 
-            $this->validate($request,$rules,$customMessages);
-            $user_id = Auth::user()->id;
-            
-            $testimonial = Testimonial::where('user_id', $user_id)->get()->count();
-            if($testimonial>=1){
-                Testimonial::where('user_id', $user_id)->update(['description'=> $data['description']]);
-                return redirect()->back()->with('success_message','Testimonial anda berhasil diperbarui!');
-            }else{
-                $testimonial = new Testimonial;
-                $testimonial->user_id = $user_id;
-                $testimonial->description = $data['description'];
-                $testimonial->status = 0;
-                $testimonial->save();
-                return redirect()->back()->with('success_message','Testimonial anda berhasil dibuat!');
-            }
-        }
-        return view('front.customers.testimonial',compact('getTestimonial'));
-    }
 
-    
 }

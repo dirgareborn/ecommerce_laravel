@@ -1,235 +1,69 @@
-ul.dropdown-cart{
-    min-width:250px;
-}
-ul.dropdown-cart li .item{
-    display:block;
-    padding:3px 10px;
-    margin: 3px 0;
-}
-ul.dropdown-cart li .item:hover{
-    background-color:#f3f3f3;
-}
-ul.dropdown-cart li .item:after{
-    visibility: hidden;
-    display: block;
-    font-size: 0;
-    content: " ";
-    clear: both;
-    height: 0;
-}
-
-ul.dropdown-cart li .item-left{
-    float:left;
-}
-ul.dropdown-cart li .item-left img,
-ul.dropdown-cart li .item-left span.item-info{
-    float:left;
-}
-ul.dropdown-cart li .item-left span.item-info{
-    margin-left:10px;   
-}
-ul.dropdown-cart li .item-left span.item-info span{
-    display:block;
-}
-ul.dropdown-cart li .item-right{
-    float:right;
-}
-ul.dropdown-cart li .item-right button{
-    margin-top:14px;
-}
-
-/********** Template CSS **********/
+/* =========================================================
+   1. ROOT PALETTE (LIGHT + DARK) #00B98E
+   ========================================================= */
 :root {
-    --primary: #00B98E;
-    --secondary: #FF6922;
-    --light: #EFFDF5;
-    --dark: #0E2E50;
+    /* Light mode */
+    --primary: #FF7A00;        /* Orange */
+    --primary-hover: #E26700;
+    --secondary: #0077FF;      /* Blue */
+    --secondary-hover: #005FCC;
+    --dark: #0A2856;           /* Dark Blue */
+    --light: #F5FAFF;          /* Light Blue */
+
+    --text-color: #0A2856;
+    --text-muted: #5F6F89;
+
+    --bg-body: #ffffff;
+    --bg-soft: #F7F9FC;
+    --border-color: #DAE8FF;
 }
 
-.back-to-top {
-    position: fixed;
-    display: none;
-    right: 45px;
-    bottom: 45px;
-    z-index: 99;
+/* Dark mode overrides */
+body.dark-mode {
+    --primary: #FF8800;
+    --primary-hover: #FF9A2E;
+
+    --secondary: #3399FF;
+    --secondary-hover: #1C7ED6;
+
+    --dark: #FFFFFF;
+    --light: #1A2332;
+
+    --text-color: #E8EEF6;
+    --text-muted: #A9B8CE;
+
+    --bg-body: #0C1522;
+    --bg-soft: #131E2E;
+    --border-color: #1F2D40;
 }
 
-
-/*** Spinner ***/
-#spinner {
-    opacity: 0;
-    visibility: hidden;
-    transition: opacity .5s ease-out, visibility 0s linear .5s;
-    z-index: 99999;
+/* =========================================================
+   2. GLOBAL BASE STYLING
+   ========================================================= */
+body {
+    background-color: var(--bg-body);
+    color: var(--text-color);
+    transition: 0.25s ease-in-out;
 }
 
-#spinner.show {
-    transition: opacity .5s ease-out, visibility 0s linear 0s;
-    visibility: visible;
-    opacity: 1;
+p, span, small {
+    color: var(--text-muted);
 }
 
-
-/*** Receipt ***/
-
-.receipt-main {
-    background: #ffffff none repeat scroll 0 0;
-    border-bottom: 12px solid #333333;
-    border-top: 12px solid #9f181c;
-    margin-top: 50px;
-    margin-bottom: 50px;
-    padding: 40px 30px !important;
-    position: relative;
-    box-shadow: 0 1px 21px #acacac;
-    color: #333333;
-    font-family: open sans;
-}
-.receipt-main p {
-    color: #333333;
-    font-family: open sans;
-    line-height: 1.42857;
-}
-.receipt-footer h1 {
-    font-size: 15px;
-    font-weight: 400 !important;
-    margin: 0 !important;
-}
-.receipt-main::after {
-    background: #414143 none repeat scroll 0 0;
-    content: "";
-    height: 5px;
-    left: 0;
-    position: absolute;
-    right: 0;
-    top: -13px;
-}
-.receipt-main thead {
-    background: #414143 none repeat scroll 0 0;
-}
-.receipt-main thead th {
-    color:#fff;
-}
-.receipt-right h5 {
-    font-size: 16px;
-    font-weight: bold;
-    margin: 0 0 7px 0;
-}
-.receipt-right p {
-    font-size: 12px;
-    margin: 0px;
-}
-.receipt-right p i {
-    text-align: center;
-    width: 18px;
-}
-.receipt-main td {
-    padding: 9px 20px !important;
-}
-.receipt-main th {
-    padding: 13px 20px !important;
-}
-.receipt-main td {
-    font-size: 13px;
-    font-weight: initial !important;
-}
-.receipt-main td p:last-child {
-    margin: 0;
-    padding: 0;
-}	
-.receipt-main td h2 {
-    font-size: 20px;
-    font-weight: 900;
-    margin: 0;
-    text-transform: uppercase;
-}
-.receipt-header-mid .receipt-left h1 {
-    font-weight: 100;
-    margin: 34px 0 0;
-    text-align: right;
-    text-transform: uppercase;
-}
-.receipt-header-mid {
-    margin: 24px 0;
-    overflow: hidden;
+/* Card / Box */
+.card, .box, .panel {
+    background: var(--bg-soft);
+    border: 1px solid var(--border-color);
+    transition: background 0.3s, border 0.3s;
 }
 
-/*** Button ***/
-.btn {
-    transition: .5s;
-}
-
-.btn.btn-primary,
-.btn.btn-secondary {
-    color: #FFFFFF;
-}
-
-.btn-square {
-    width: 38px;
-    height: 38px;
-}
-
-.btn-sm-square {
-    width: 32px;
-    height: 32px;
-}
-
-.btn-lg-square {
-    width: 48px;
-    height: 48px;
-}
-
-.btn-square,
-.btn-sm-square,
-.btn-lg-square {
-    padding: 0;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-weight: normal;
-    border-radius: 50px;
-}
-
-
-/*** Navbar ***/
-.nav-bar {
-    position: relative;
-    margin-top: 45px;
-    padding: 0 3rem;
-    transition: .5s;
-    z-index: 9999;
-}
-
-.nav-bar.sticky-top {
-    position: sticky;
-    padding: 0;
-    z-index: 9999;
-}
-
-.navbar {
-    box-shadow: 0 0 30px rgba(0, 0, 0, .08);
-}
-
-.navbar .dropdown-toggle::after {
-    border: none;
-    content: "\f107";
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    vertical-align: middle;
-    margin-left: 5px;
-    transition: .5s;
-}
-
-.navbar .dropdown-toggle[aria-expanded=true]::after {
-    transform: rotate(-180deg);
-}
-
+/* =========================================================
+   3. NAVBAR
+   ========================================================= */
 .navbar-light .navbar-nav .nav-link {
-    margin-right: 30px;
-    padding: 25px 0;
-    color: #FFFFFF;
-    font-size: 15px;
-    text-transform: uppercase;
-    outline: none;
+    color: var(--dark);
+    font-weight: 500;
+    transition: 0.3s;
 }
 
 .navbar-light .navbar-nav .nav-link:hover,
@@ -237,82 +71,114 @@ ul.dropdown-cart li .item-right button{
     color: var(--primary);
 }
 
-@media (max-width: 991.98px) {
-    .nav-bar {
-        margin: 0;
-        padding: 0;
-    }
-
-    .navbar-light .navbar-nav .nav-link  {
-        margin-right: 0;
-        padding: 10px 0;
-    }
-
-    .navbar-light .navbar-nav {
-        border-top: 1px solid #EEEEEE;
-    }
+.navbar-light .navbar-nav {
+    border-top: 1px solid var(--border-color);
 }
 
-.navbar-light .navbar-brand {
-    height: 75px;
-}
-
-.navbar-light .navbar-nav .nav-link {
-    color: var(--dark);
+/* =========================================================
+   4. BUTTONS
+   ========================================================= */
+.btn {
     font-weight: 500;
+    border-radius: 6px;
 }
 
-@media (min-width: 992px) {
-    .navbar .nav-item .dropdown-menu {
-        display: block;
-        top: 100%;
-        margin-top: 0;
-        transform: rotateX(-75deg);
-        transform-origin: 0% 0%;
-        opacity: 0;
-        visibility: hidden;
-        transition: .5s;
-        
-    }
-
-    .navbar .nav-item:hover .dropdown-menu {
-        transform: rotateX(0deg);
-        visibility: visible;
-        transition: .5s;
-        opacity: 1;
-    }
+/* Primary */
+.btn-primary {
+    background: var(--primary);
+    border-color: var(--primary);
+    color: #fff;
+}
+.btn-primary:hover {
+    background: var(--primary-hover);
+    border-color: var(--primary-hover);
 }
 
-
-/*** Header ***/
-@media (min-width: 992px) {
-    .header {
-        margin-top: -120px;
-    }
+/* Secondary */
+.btn-secondary {
+    background: var(--secondary);
+    border-color: var(--secondary);
+    color: #fff;
+}
+.btn-secondary:hover {
+    background: var(--secondary-hover);
+    border-color: var(--secondary-hover);
 }
 
-.header-carousel .owl-nav {
-    position: absolute;
-    top: 50%;
-    left: -25px;
-    transform: translateY(-50%);
-    display: flex;
-    flex-direction: column;
+/* Ghost Button */
+.btn-outline-primary {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+.btn-outline-primary:hover {
+    background: var(--primary);
+    color: #fff;
 }
 
+/* =========================================================
+   5. DROPDOWN CART
+   ========================================================= */
+ul.dropdown-cart li .item:hover {
+    background-color: var(--light);
+    transition: 0.3s;
+}
+
+/* =========================================================
+   6. RECEIPT PAGE
+   ========================================================= */
+.receipt-main {
+    background: var(--bg-body);
+    border-bottom: 12px solid var(--dark);
+    border-top: 12px solid var(--primary);
+    box-shadow: 0 1px 21px rgba(0, 119, 255, 0.25);
+    color: var(--text-color);
+}
+
+.receipt-main p {
+    color: var(--text-color);
+}
+
+.receipt-main::after {
+    background: var(--secondary);
+}
+
+.receipt-main thead {
+    background: var(--secondary);
+}
+
+.receipt-main thead th {
+    color: #fff;
+}
+
+/* =========================================================
+   7. ICONS & CATEGORY
+   ========================================================= */
+.icon {
+    border: 1px dashed var(--primary) !important;
+}
+
+.cat-item div {
+    border: 1px dashed rgba(255, 122, 0, .3);
+}
+
+.cat-item:hover div {
+    background: var(--primary);
+    color: #fff;
+}
+
+.property-item .border-top,
+.property-item .border-end,
+.testimonial-carousel .testimonial-item .border {
+    border-color: rgba(255, 122, 0, .3) !important;
+}
+
+/* =========================================================
+   8. CAROUSEL / SLIDER
+   ========================================================= */
 .header-carousel .owl-nav .owl-prev,
 .header-carousel .owl-nav .owl-next {
-    margin: 7px 0;
-    width: 50px;
-    height: 50px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #FFFFFF;
     background: var(--primary);
-    border-radius: 40px;
-    font-size: 20px;
-    transition: .5s;
+    transition: 0.3s;
 }
 
 .header-carousel .owl-nav .owl-prev:hover,
@@ -320,117 +186,9 @@ ul.dropdown-cart li .item-right button{
     background: var(--dark);
 }
 
-@media (max-width: 768px) {
-    .header-carousel .owl-nav {
-        left: 25px;
-    }
-}
-
-.breadcrumb-item + .breadcrumb-item::before {
-    color: #DDDDDD;
-}
-
-
-/*** Icon ***/
-.icon {
-    padding: 15px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    background: #FFFFFF !important;
-    border-radius: 50px;
-    border: 1px dashed var(--primary) !important;
-}
-
-
-/*** About ***/
-.about-img img {
-    position: relative;
-    z-index: 2;
-}
-
-.about-img::before {
-    position: absolute;
-    content: "";
-    top: 0;
-    left: -50%;
-    width: 100%;
-    height: 100%;
-    background: var(--primary);
-    transform: skew(20deg);
-    z-index: 1;
-}
-
-
-/*** Category ***/
-.cat-item div {
-    background: #FFFFFF;
-    border: 1px dashed rgba(0, 185, 142, .3);
-    transition: .5s;
-}
-
-.cat-item:hover div {
-    background: var(--primary);
-    border-color: transparent;
-}
-
-.cat-item div * {
-    transition: .5s;
-}
-
-.cat-item:hover div * {
-    color: #FFFFFF !important;
-}
-
-
-/*** Property List ***/
-.nav-pills .nav-item .btn {
-    color: var(--dark);
-}
-
-.nav-pills .nav-item .btn:hover,
-.nav-pills .nav-item .btn.active {
-    color: #FFFFFF;
-}
-
-.property-item {
-    box-shadow: 0 0 30px rgba(0, 0, 0, .08);
-}
-
-.property-item img {
-    transition: .5s;
-}
-
-.property-item:hover img {
-    transform: scale(1.1);
-}
-
-.property-item .border-top {
-    border-top: 1px dashed rgba(0, 185, 142, .3) !important;
-}
-
-.property-item .border-end {
-    border-right: 1px dashed rgba(0, 185, 142, .3) !important;
-}
-
-
-/*** Team ***/
-.team-item {
-    box-shadow: 0 0 30px rgba(0, 0, 0, .08);
-    transition: .5s;
-}
-
-.team-item .btn {
-    color: var(--primary);
-    background: #FFFFFF;
-    box-shadow: 0 0 30px rgba(0, 0, 0, .15);
-}
-
-.team-item .btn:hover {
-    color: #FFFFFF;
-    background: var(--primary);
-}
-
+/* =========================================================
+   9. TEAM SECTION
+   ========================================================= */
 .team-item:hover {
     border-color: var(--secondary) !important;
 }
@@ -439,126 +197,19 @@ ul.dropdown-cart li .item-right button{
     background: var(--secondary) !important;
 }
 
-.team-item:hover .bg-primary i {
-    color: var(--secondary) !important;
-}
-
-
-/*** Testimonial ***/
-.testimonial-carousel {
-    padding-left: 1.5rem;
-    padding-right: 1.5rem;
-}
-
-@media (min-width: 576px) {
-    .testimonial-carousel {
-        padding-left: 4rem;
-        padding-right: 4rem;
-    }
-}
-
-.testimonial-carousel .testimonial-item .border {
-    border: 1px dashed rgba(0, 185, 142, .3) !important;
-}
-
-.testimonial-carousel .owl-nav {
-    position: absolute;
-    width: 100%;
-    height: 40px;
-    top: calc(50% - 20px);
-    left: 0;
-    display: flex;
-    justify-content: space-between;
-    z-index: 1;
-}
-
-.testimonial-carousel .owl-nav .owl-prev,
-.testimonial-carousel .owl-nav .owl-next {
-    position: relative;
-    width: 40px;
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: #FFFFFF;
-    background: var(--primary);
-    border-radius: 40px;
-    font-size: 20px;
-    transition: .5s;
-}
-
-.testimonial-carousel .owl-nav .owl-prev:hover,
-.testimonial-carousel .owl-nav .owl-next:hover {
-    background: var(--dark);
-}
-
-
-/*** Footer ***/
-.footer .btn.btn-social {
-    margin-right: 5px;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    color: var(--light);
-    border: 1px solid rgba(255,255,255,0.5);
-    border-radius: 35px;
-    transition: .3s;
-}
-
+/* =========================================================
+   10. FOOTER
+   ========================================================= */
 .footer .btn.btn-social:hover {
     color: var(--primary);
-    border-color: var(--light);
-}
-
-.footer .btn.btn-link {
-    display: block;
-    margin-bottom: 5px;
-    padding: 0;
-    text-align: left;
-    font-size: 15px;
-    font-weight: normal;
-    text-transform: capitalize;
-    transition: .3s;
-}
-
-.footer .btn.btn-link::before {
-    position: relative;
-    content: "\f105";
-    font-family: "Font Awesome 5 Free";
-    font-weight: 900;
-    margin-right: 10px;
-}
-
-.footer .btn.btn-link:hover {
-    letter-spacing: 1px;
-    box-shadow: none;
 }
 
 .footer .form-control {
-    border-color: rgba(255,255,255,0.5);
+    border-color: var(--border-color);
+    background: var(--bg-soft);
+    color: var(--text-color);
 }
 
 .footer .copyright {
-    padding: 25px 0;
-    font-size: 15px;
-    border-top: 1px solid rgba(256, 256, 256, .1);
+    border-top: 1px solid rgba(255,255,255,0.12);
 }
-
-.footer .copyright a {
-    color: var(--light);
-}
-
-.footer .footer-menu a {
-    margin-right: 15px;
-    padding-right: 15px;
-    border-right: 1px solid rgba(255, 255, 255, .1);
-}
-
-.footer .footer-menu a:last-child {
-    margin-right: 0;
-    padding-right: 0;
-    border-right: none;
-}
-

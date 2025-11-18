@@ -1,92 +1,83 @@
 @extends('front.layouts.app')
 
 @section('content')
-<div class="container-fluid header bg-white p-0">
-    <div class="row g-0 align-items-center flex-column-reverse flex-md-row">
-        <div class="col-md-6 p-5 mt-lg-5">
-             <br>
-             <br>
-             <br>
-            <nav aria-label="breadcrumb animated fadeIn">
-                <ol class="breadcrumb text-uppercase">
-                    @for($i = 1; $i <= count(Request::segments()); $i++) <li class="breadcrumb-item"><a href="{{ URL::to( implode( '/', array_slice(Request::segments(), 0 ,$i, true)))}}">{{strtoupper(Request::segment($i))}}</a></li>
-                        @endfor
-                </ol>
-            </nav>
-        </div>
-    </div>
-</div>
-<div class="container">
-    <div class="row justify-content-center">
-        <div class="col-md-8">
-            <div class="card">
-                <div class="card-header">{{ __('Daftar') }}</div>
+<div class="container-xxl py-5">
+    <div class="container">
+        <div class="row justify-content-center align-items-center" style="min-height:70vh;">
+            <div class="col-lg-5 col-md-7">
 
-                <div class="card-body">
-                    <form method="POST" action="{{ route('register') }}">
-                        @csrf
+                {{-- Card Register --}}
+                <div class="card border-0 wow fadeInUp" data-wow-delay="0.1s">
+                    <div class="card-body p-4 p-sm-5">
+                        <h3 class="text-center mb-4 text-primary fw-bold">Silahkan Registrasi</h3>
+                        <p class="text-center text-muted mb-4">Buat akun baru untuk mengakses layanan BPB.</p>
 
-                        <div class="row mb-3">
-                            <label for="name" class="col-md-4 col-form-label text-md-end">{{ __('Nama') }}</label>
+                        <form method="POST" action="{{ route('register') }}">
+                            @csrf
 
-                            <div class="col-md-6">
-                                <input id="name" type="text" class="form-control @error('name') is-invalid @enderror" name="name" value="{{ old('name') }}" required autocomplete="name" autofocus>
-
+                            {{-- Name --}}
+                            <div class="form-floating mb-3">
+                                <input type="text" class="form-control @error('name') is-invalid @enderror"
+                                       id="name" name="name" placeholder="Nama Lengkap" required autofocus>
+                                <label for="name">Nama Lengkap</label>
                                 @error('name')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                    <span class="text-danger small">{{ $message }}</span>
                                 @enderror
                             </div>
-                        </div>
 
-                        <div class="row mb-3">
-                            <label for="email" class="col-md-4 col-form-label text-md-end">{{ __('Email Address') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="email" type="email" class="form-control @error('email') is-invalid @enderror" name="email" value="{{ old('email') }}" required autocomplete="email">
-
+                            {{-- Email --}}
+                            <div class="form-floating mb-3">
+                                <input type="email" class="form-control @error('email') is-invalid @enderror"
+                                       id="email" name="email" placeholder="Email" required>
+                                <label for="email">Email</label>
                                 @error('email')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                    <span class="text-danger small">{{ $message }}</span>
                                 @enderror
                             </div>
-                        </div>
 
-                        <div class="row mb-3">
-                            <label for="password" class="col-md-4 col-form-label text-md-end">{{ __('Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password" type="password" class="form-control @error('password') is-invalid @enderror" name="password" required autocomplete="new-password">
-
+                            {{-- Password --}}
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control @error('password') is-invalid @enderror"
+                                       id="password" name="password" placeholder="Password" required>
+                                <label for="password">Password</label>
                                 @error('password')
-                                    <span class="invalid-feedback" role="alert">
-                                        <strong>{{ $message }}</strong>
-                                    </span>
+                                    <span class="text-danger small">{{ $message }}</span>
                                 @enderror
                             </div>
-                        </div>
 
-                        <div class="row mb-3">
-                            <label for="password-confirm" class="col-md-4 col-form-label text-md-end">{{ __('Confirm Password') }}</label>
-
-                            <div class="col-md-6">
-                                <input id="password-confirm" type="password" class="form-control" name="password_confirmation" required autocomplete="new-password">
+                            {{-- Password Confirmation --}}
+                            <div class="form-floating mb-3">
+                                <input type="password" class="form-control" id="password_confirmation" 
+                                       name="password_confirmation" placeholder="Konfirmasi Password" required>
+                                <label for="password_confirmation">Konfirmasi Password</label>
                             </div>
-                        </div>
 
-                        <div class="row mb-0">
-                            <div class="col-md-6 offset-md-4">
-                                <button type="submit" class="btn btn-primary">
-                                    {{ __('Register') }}
-                                </button>
+                            {{-- Submit --}}
+                            <div class="d-grid mb-3">
+                                <button type="submit" class="btn btn-primary btn-lg animated pulse">Register</button>
                             </div>
-                        </div>
-                    </form>
+
+                            {{-- Links --}}
+                            <div class="text-center">
+                                <p class="small text-muted">
+                                    Sudah punya akun? <a href="{{ route('login') }}" class="text-decoration-none">Login di sini</a>
+                                </p>
+                            </div>
+                        </form>
+                    </div>
                 </div>
-            </div>
+
+                </div>
         </div>
     </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    // Animasi wow.js
+    $(document).ready(function(){
+        new WOW().init();
+    });
+</script>
+@endpush

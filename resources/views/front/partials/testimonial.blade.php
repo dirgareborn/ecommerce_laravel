@@ -2,8 +2,7 @@
        <div class="container-xxl py-5">
             <div class="container">
                 <div class="text-center mx-auto mb-5 wow fadeInUp" data-wow-delay="0.1s" style="max-width: 600px;">
-                    <h1 class="mb-3">Pendapat Mereka Dengan  Layanan Kami</h1>
-                    <p>Meningkatkan pelayanan kepada masyarakat dalam rangka memajukan kesejahteraan umum dan mencerdaskan kehidupan bangsa</p>
+                    <h1 class="mb-3 bg-title-navy">Testimoni</h1>
                 </div>
                 <div class="owl-carousel testimonial-carousel wow fadeInUp" data-wow-delay="0.1s">
                     @foreach($getTestimonial as $testimonial)

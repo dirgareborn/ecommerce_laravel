@@ -11,6 +11,15 @@ class Category extends Model
 {
     use HasFactory;
 
+
+    protected $fillable = [
+        'parent_id',
+        'category_name',
+        'url',
+        'category_image',
+        'status',
+    ];
+
     public function parentcategory(){
         return $this->hasOne('App\Models\Category','id','parent_id')->select('id','category_name','url')->where('status',1);
     }
@@ -20,15 +29,17 @@ class Category extends Model
     }
 
     public static function getCategories(){
-        
-        $getCategories = Category::with(['subcategories' => function($query){
+        return Category::with(['subcategories' => function($query){
             $query->with('subcategories');
-        }])->where('parent_id',0)->where('status',1)->get()->toArray();
-        return $getCategories;
+        }])
+        ->whereNull('parent_id')     // ⬅ ini solusi
+        ->where('status', 1)
+        ->get()
+        ->toArray();
     }
 
     public static function categoryDetails($url){
-        $categoryDetails = Category::select('id','parent_id','description','category_name','url')
+        $categoryDetails = Category::select('id','parent_id','category_name','url')
         ->with('subcategories')
         ->where('url',$url)
         ->first()
@@ -39,7 +50,7 @@ class Category extends Model
         foreach($categoryDetails['subcategories'] as $subcat){
             $catIds[] = $subcat['id'];
         }
-        if($categoryDetails['parent_id']==0){
+        if($categoryDetails['parent_id']==Null){
             // Only show main category
             $breadcrumbs = "";
         }else{

@@ -18,7 +18,13 @@ class ProductTableSeeder extends Seeder
             'category_id'=>1,
             'location_id'=>3,
             'product_name'=>'Hall A.P Pettarani',
-            'product_facility'=>'-',
+            'product_facility'=>'[
+            { "name": "WiFi" },
+            { "name": "AC" },
+            { "name": "Proyektor" },
+            { "name": "Whiteboard" },
+            { "name": "Kursi 400 unit" }
+          ]',
             'product_price'=>17500000,
             'product_image'=>'',
             'product_description'=>'Content',

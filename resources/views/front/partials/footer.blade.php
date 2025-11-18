@@ -3,7 +3,7 @@
             <div class="container py-5">
                 <div class="row g-5">
                     <div class="col-lg-3 col-md-6">
-                        <h5 class="text-white mb-4">Get In Touch</h5>
+                        <h5 class="text-white mb-4">Alamat Kantor</h5>
                         <p class="mb-2"><i class="fa fa-map-marker-alt me-3"></i>{{ strip_tags($profil->alamat ?? '') }}</p>
                         <p class="mb-2"><i class="fa fa-phone-alt me-3"></i>{{ $profil->telepon ?? ''}}</p>
                         <p class="mb-2"><i class="fa fa-envelope me-3"></i>{{ $profil->email ?? ''}}</p>
@@ -32,32 +32,28 @@
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-6">
-                        <h5 class="text-white mb-4">Newsletter</h5>
-                        <p>Ikuti informasi terbaru kami.</p>
-                        <div class="position-relative mx-auto" style="max-width: 400px;">
-						<form method="post" action="{{url('newsletter/store')}}">
-						@csrf
-                            <input name="email" class="form-control bg-transparent w-100 py-3 ps-4 pe-5" type="text" placeholder="Your email">
-                            <button type="button" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Ikuti</button>
-						</form>
-                        </div>
-                    </div>
+    <h5 class="text-white mb-4">Newsletter</h5>
+    <p>Ikuti informasi terbaru kami.</p>
+    <div class="position-relative mx-auto" style="max-width: 400px;">
+        <form id="newsletterForm">
+            @csrf
+            <input name="email" id="newsletterEmail" class="form-control bg-transparent w-100 py-3 ps-4 pe-5" type="email" placeholder="email..." required>
+            <button type="submit" class="btn btn-primary py-2 position-absolute top-0 end-0 mt-2 me-2">Ikuti</button>
+        </form>
+    </div>
+</div>
                 </div>
             </div>
             <div class="container">
                 <div class="copyright">
                     <div class="row">
                         <div class="col-md-6 text-center text-md-start mb-3 mb-md-0">
-                            &copy; <a class="border-bottom" href="#">BPB UNM</a>, All Right Reserved.
-
-                            <!--/*** This template is free as long as you keep the footer author’s credit link/attribution link/backlink. If you'd like to use the template without the footer author’s credit link/attribution link/backlink, you can purchase the Credit Removal License from "https://htmlcodex.com/credit-removal". Thank you for your support. ***/-->
-                            <!-- Designed By <a class="border-bottom" href="https://htmlcodex.com">HTML Codex</a> -->
+                            &copy; <span>BPB</span> <a class="" href="https://unm.ac.id">UNM</a>, All Right Reserved. v.{{ app_version() }}
                         </div>
                         <div class="col-md-6 text-center text-md-end">
                             <div class="footer-menu">
-                                <a href="">Home</a>
-                                <a href="">Cookies</a>
-                                <a href="">Help</a>
+                                <a href="{{ route('beranda') }}">Beranda</a>
+                                <a href="{{ route('cookies') }}">Cookies</a>
                                 <a href="{{ route('faq') }}">FQAs</a>
                             </div>
                         </div>

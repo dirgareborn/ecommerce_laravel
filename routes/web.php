@@ -3,14 +3,21 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Front\CategoryController;
 use App\Http\Controllers\Front\ProductController;
-use App\Http\Controllers\Front\PageController;
 use App\Http\Controllers\Front\UserController;
+use App\Http\Controllers\Front\OrderController;
+use App\Http\Controllers\Front\ProductRatingController;
 use App\Models\Category;
 use App\Models\CmsPage;
 use Carbon\Carbon;
-use Spatie\Sitemap\Sitemap;
-use Spatie\Sitemap\Tags\Url;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\PaymentController;
+use App\Http\Controllers\ChatController;
+use App\Http\Controllers\Front\CartController;
+use Illuminate\Support\Facades\Storage;
+use App\Http\Controllers\Front\InformationController;
+use Illuminate\Foundation\Auth\EmailVerificationRequest;
+use Illuminate\Http\Request;
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -21,159 +28,73 @@ use Illuminate\Support\Facades\Auth;
 | be assigned to the "web" middleware group. Make something great!
 |
 */
+Auth::routes(['verify' => true]);
+require __DIR__.'/admin.php';
+require __DIR__.'/guest.php';
 
- Route::get('/sitemap', function () {
-    $sitemap = Sitemap::create()
-		->add(Url::create('/')
-		->setLastModificationDate(Carbon::yesterday())
-        ->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY)
-        ->setPriority(0.1))
-		->add(Url::create('/visi-misi'))
-		->add(Url::create('/struktur-organisasi'))
-		->add(Url::create('/kontak-kami'))
-		->add(Url::create('/register'))
-		->add(Url::create('/login'))
-		->add(Url::create('/tentang-kami'));
-		
-		$cats = Category::all()->each(function(Category $category) use ($sitemap){
-		$url = $category->url;
-			$sitemap->add(Url::create('/kategori/'.$url)
-			->setLastModificationDate(Carbon::yesterday())
-			->setChangeFrequency(Url::CHANGE_FREQUENCY_YEARLY)
-			->setPriority(0.1));
-		});
-		$sitemap->writeToFile(public_path('sitemap.xml'));
-		return 'susses';
-});
+Route::get('/email/verify', function () {
+    return view('auth.verify-email');
+})->middleware('auth')->name('verification.notice');
 
-// Front Route
+Route::get('/email/verify/{id}/{hash}', function (EmailVerificationRequest $request) {
+    $request->fulfill();
+    return redirect('/')->with('success', 'Email berhasil diverifikasi!');
+})->middleware(['auth', 'signed'])->name('verification.verify');
 
-Route::namespace('App\Http\Controllers\Front')->group(function(){
-    Route::get('/', [PageController::class,'index'])->name('beranda');
+Route::post('/email/verification-notification', function (Request $request) {
+    $request->user()->sendEmailVerificationNotification();
+    return back()->with('message', 'Link verifikasi baru telah dikirim ke email Anda!');
+})->middleware(['auth', 'throttle:6,1'])->name('verification.send');
 
-    // Listing Categories Route
-   $catUrls = Category::select('url')->where('status',1)->get()->pluck('url');
-    foreach($catUrls as $key => $url){
-        Route::get('kategori/'. $url,'ProductController@listing');
-    } 
-	
-	//Category all
-    Route::get('kategori', 'CategoryController@category');
-	
-    //Product Detail
-    Route::get('kategori/{category}/{url}','ProductController@detail');
+// Front Route Customer
+Route::middleware(['auth','verified'])->namespace('App\Http\Controllers\Front')->group(function () {
 
-    // Product Search
-    Route::get('search-products','ProductController@listing');
+       //Cart
+    Route::post('/addCart', 'CartController@addToCart');
+    Route::get('/cart','CartController@index');
+    Route::get('/cart/delete-cart-item/{id?}','CartController@delete')->name('cart.delete');
+    Route::post('/apply-coupon','CartController@applyCoupon')->name('cart.applyCoupon');
+    Route::match(['get','post'],'/checkout','CartController@checkout')->name('checkout');
+
+
+    Route::get('/order-success','OrderController@orderSuccess');
+    Route::get('/invoice/{id}',[OrderController::class, 'generatePDF'])->name('order.invoice');
+    Route::get('/download-invoice/{id}','OrderController@downloadPDF');
+    Route::get('/pay', [PaymentController::class, 'createTransaction']);
+    Route::post('/payment/notification', [PaymentController::class, 'notification']);
     
-    // Add To Cart
-    Route::post('/add-to-cart','ProductController@addToCart');
-    Route::get('/cart','ProductController@Cart');
-    Route::get('/cart/delete-cart-item/{id?}','ProductController@deleteItem');
-	
-	Route::post('/apply-coupon','ProductController@applyCoupon');
-	Route::match(['get','post'],'/checkout','ProductController@checkout');
-	
-	Route::get('/order-success','OrderController@orderSuccess');
-	Route::get('/order-invoice-pdf/{id}','OrderController@generatePDF');
-	Route::get('/download-invoice-pdf/{id}','OrderController@downloadPDF');
-	Route::get('/daftar-pesanan','OrderController@orders');
-	
-	//customer
-	Route::get('/account','UserController@account');
-	Route::get('/profil','UserController@profil');
-	Route::match(['get','post'],'update-password','UserController@updatePassword');
-    Route::post('update-detail','UserController@updateDetail');
+    Route::post('product/{product}/rate', [ProductRatingController::class, 'rate'])->name('product.rate');
+   // Untuk Member Area
+    Route::get('/member/akun','UserController@account')->name('member.akun');
+    Route::get('/member/profil','UserController@profil')->name('member.profil');
+    Route::get('/member/pesanan',[OrderController::class,'orders'])->name('member.pesanan');
+    Route::match(['get','post'],'/member/testimoni','UserController@testimonial')->name('member.testimoni');
+    Route::match(['get','post'],'update-password','UserController@updatePassword');
+    Route::post('update-detail','UserController@updateDetail')->name('update.profil');
     Route::post('check-current-password','UserController@checkCurrentPassword');
-    Route::match(['get','post'],'testimonial','UserController@testimonial');
+    Route::post('/upload-payment-proof', [OrderController::class, 'uploadProof'])->name('upload.payment.proof');
+    // Route::get('/view-proof/{order}', [OrderController::class, 'viewProof'])->name('view.payment.proof');
+    Route::get('/payment-proof/{order}', function (\App\Models\Order $order) {
+        if (!auth()->check() || auth()->id() !== $order->user_id) {
+            abort(403, 'Unauthorized');
+        }
 
-	
-	// Page
-    Route::get('/visi-misi', [PageController::class,'visiMisi'])->name('visi-misi');
-    Route::get('/kontak-kami', [PageController::class,'kontak'])->name('kontak-kami');
-    Route::get('/struktur-organisasi', [PageController::class,'strukturOrganisasi'])->name('struktur-organisasi');
-    Route::get('/faq', [PageController::class,'faq'])->name('faq');
+        $path = storage_path('app/private/payment_proofs/' . $order->payment_proof);
 
-     // Listing Page Route
-    $catUrls = CmsPage::select('url')->where('status','ready')->get()->pluck('url');
-    foreach($catUrls as $key => $url){
-        Route::get($url,'PageController@show');
-    } 
+        if (!file_exists($path)) {
+            abort(404, 'File not found');
+        }
+
+        return response()->file($path);
+    })->name('payment.proof.show');
+    Route::get('/akun', [UserController::class, 'index'])->name('akun');
+
+   // End Member Area
+
+    Route::post('informasi/{information}/comment', [InformationController::class, 'comment'])->name('informasi.comment');
+    Route::post('informasi/{information}/reply', [InformationController::class, 'reply'])->name('informasi.reply');
+
 });
-Auth::routes();
-// User Route
-Route::get('/akun', [UserController::class, 'index'])->name('akun');
-
-// Admin Route
-Route::prefix('/admin')->namespace('App\Http\Controllers\Admin')->group(function(){
-    Route::post('newsletter/store','App\Http\Controllers\Admin\NewsletterController@store');
-    Route::match(['get','post'],'login','AdminController@login');
-    Route::group(['middleware'=>['admin']], function(){
-        Route::get('dashboard','DashboardController@dashboard')->name('admin.dashboard');
-        Route::match(['get','post'],'update-password','AdminController@updatePassword');
-        Route::match(['get','post'],'update-detail','AdminController@updateDetail');
-        Route::post('check-current-password','AdminController@checkCurrentPassword');
-        Route::get('logout','AdminController@logout');
 
 
-        // Rout CMS
-        Route::get('cms-pages','CmsController@index');
-        Route::post('update-cms-page-status','CmsController@update');
-        Route::match(['get','post'],'add-edit-cms-page/{id?}','CmsController@edit');
-        Route::get('delete-cms-page/{id?}','CmsController@destroy');
-        
-        // Subadmins
-        Route::get('subadmins','AdminController@subadmins');
-        Route::post('update-subadmin-status','AdminController@updateSubadminStatus');
-        Route::match(['get','post'],'add-subadmin/{id?}','AdminController@edit');
-        Route::get('delete-subadmin/{id?}','AdminController@deleteSubAdmin');
-
-        // Roles Permissions
-        Route::match(['get','post'],'update-role/{id?}','AdminController@updateRole');
-    
-        // Categories
-        Route::get('categories', 'CategoryController@categories');
-        Route::post('update-category-status','CategoryController@updateStatus');
-        Route::get('delete-category/{id?}','CategoryController@deleteCategory');
-        Route::get('delete-category-image/{id?}','CategoryController@deleteCategoryImage');
-        Route::match(['get','post'],'add-edit-category/{id?}','CategoryController@edit');
-
-        // Products
-        Route::get('products', 'ProductController@products');
-        Route::post('update-product-status','ProductController@updateStatus');
-        Route::get('delete-product/{id?}','ProductController@deleteProduct');
-        Route::get('delete-product-image/{id?}','ProductController@deleteProductImage');
-		
-        Route::get('delete-product-image-slide/{id?}','ProductController@deleteProductImageSlide');
-        Route::match(['get','post'],'add-edit-product/{id?}','ProductController@edit');
-
-        // Banners
-        Route::get('banners', 'BannerController@banners');
-        Route::post('update-banner-status','BannerController@updateStatus');
-        Route::get('delete-banner/{id?}','BannerController@deleteBanner');
-        Route::get('delete-banner-image/{id?}','BannerController@deleteBannerImage');
-        Route::match(['get','post'],'add-edit-banner/{id?}','BannerController@edit');
-		
-		// Account Bank
-		Route::get('account-banks', 'AccountBankController@accountbanks');
-        Route::post('update-account-bank-status','AccountBankController@updateStatus');
-        Route::get('delete-account-bank/{id?}','AccountBankController@deleteAccountBank');
-        Route::get('delete-account-bank-icon/{id?}','AccountBankController@deleteAccountBankImage');
-        Route::match(['get','post'],'add-edit-account-bank/{id?}','AccountBankController@edit');
-		
-		// Coupons
-        Route::get('coupons', 'CouponController@coupons');
-        Route::post('update-coupon-status','CouponController@updateStatus');
-        Route::get('delete-coupon/{id?}','CouponController@deletCoupon');
-        Route::match(['get','post'],'add-edit-coupon/{id?}','CouponController@edit');
-		
-        // Customer
-        Route::get('customers', 'UserController@users');
-		
-		// Orders 
-		Route::get('/orders','OrderController@orders');
-		Route::get('/order-details/{id}','OrderController@orderDetails');
-		Route::get('/edit-order/{id}','OrderController@edit');
-    });
-});
 

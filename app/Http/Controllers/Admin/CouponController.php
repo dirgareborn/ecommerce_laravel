@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Models\AdminsRole;
+use App\Models\AdminRole;
 use Intervention\Image\Laravel\Facades\Image;
 use App\Models\Coupon;
 use Illuminate\Support\Facades\DB;
@@ -24,17 +24,17 @@ class CouponController extends Controller
         $coupons = Coupon::get()->toArray();
 
         //Set Admin/Subadmins Permissions 
-        $couponModuleCount = AdminsRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'banners'])->count();
+        $couponModuleCount = AdminRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'coupons'])->count();
         $couponModule = [];
         if(Auth::guard('admin')->user()->type=="admin"){
             $couponModule['view_access']=1;
             $couponModule['edit_access']=1;
             $couponModule['full_access']=1;
         }else if($couponModuleCount == 0){
-            $message = "This Featu is retriced for you!";
+            $message = "This Feature is retriced for you!";
             return redirect('admin/dashboard')->with('error_message',$message);
         }else{
-            $couponModule = AdminsRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'coupons'])->first()->toArray();
+            $couponModule = AdminRole::where(['admin_id'=>Auth::guard('admin')->user()->id,'module'=>'coupons'])->first()->toArray();
         }        
         return view('admin.coupons.coupons')->with(compact('title','coupons','couponModule'));
     }

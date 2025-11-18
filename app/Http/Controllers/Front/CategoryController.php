@@ -17,9 +17,9 @@ class CategoryController extends Controller
     {
 		
         $page_title = 'KATEGORI';
-         
+         $categories = Category::with('subcategories')->orderBy('category_name')->get();
         // dd($layanan);
-        return view('front.pages.categories', compact('page_title'));
+        return view('front.pages.categories', compact('page_title','categories'));
     }
 
 
