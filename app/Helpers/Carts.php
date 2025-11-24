@@ -1,7 +1,7 @@
 <?php
 
+use App\Models\Booking;
 use App\Models\Cart;
-use App\Models\Order;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 
@@ -16,7 +16,7 @@ if (! function_exists('cartItems')) {
         $session_id = Session::get('session_id') ?? Session::getId();
         Session::put('session_id', $session_id);
 
-        $query = Cart::with(['product', 'product.category']);
+        $query = Cart::with(['service', 'service.unit']);
 
         $user_id
             ? $query->where('user_id', $user_id)
@@ -44,7 +44,7 @@ function getCartItems()
 }
 function getCartItemsDashboard()
 {
-    $getCartItemsDashboard = Cart::with('product')->get()->toArray();
+    $getCartItemsDashboard = Cart::with('service')->get()->toArray();
 
     return $getCartItemsDashboard;
 }
@@ -57,8 +57,8 @@ if (! function_exists('user_pending_orders')) {
             return 0;
         }
 
-        return Order::where('user_id', $user->id)
-            ->whereIn('order_status', ['waiting', 'approved', 'rejected', 'completed', 'cancelled'])
+        return Booking::where('user_id', $user->id)
+            ->whereIn('booking_status', ['waiting', 'approved', 'rejected', 'completed', 'cancelled'])
             ->count();
     }
 }
